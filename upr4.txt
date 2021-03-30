@@ -1,0 +1,370 @@
+cat - < yes (chete i printi ot yes)
+
+cat yes > yes_dve (pishe ot yes v yes_dve; ako ne syshtestvuva, go syzdava)
+cat yes 1> yes_tri (analog)
+
+cat yes no
+-> yes
+-> cat: no: Permission denied
+(1 red stdout 2 red stderr)
+
+cat yes no > out
+cat: no: Permission denied
+
+cat yes no 2> err (prenasochi stderr na komandata kym file-yt err)
+->yes
+cat err
+->cat: no: Permission denied
+
+
+> priema ime na file (ako ne syshtestvuva, go syzdava)
+
+(lqv argument nomer na file ili filov descriptor ; desen filename ili &filov descriptor)
+> (replace file)
+>> (append)
+
+cat yes no 2> append_err
+->cat: no: Permission denied
+cat yes no 2>> append_err
+->cat: no: Permission denied
+->cat: no: Permission denied
+
+
+cat yes no
+
+cat yes no &> both (moje i >>)
+(v both i stdout i stderr)
+
+cat < yes 1> stdout 2> stderr (i za 3te in,out,err) може и без 1
+    ----- -------- ---------
+
+
+/dev/null special file "c"
+vs koeto zapishem v nego shte izchezne
+
+ponqkoga komandi generirat tekst v striimovete ; prenasochvame kym dev null i izchezva
+inache tr kym nqkyde deto ne ni puka i posle da go chistim
+
+cat /etc/passwd > /dev/null
+<file_descriptor> >> filename / &<file_Descriptor>
+
+
+
+cat yes no 1> stdout 2>&1
+			redirektva stderr na cat tam kydeto sochi 1> t.e stdout
+=> v stdout i dvata streama (tova e file)
+
+cat yes no 2>&1 1>stdout
+redirektva stderr kym terminala
+
+--------------------------------------------
+head (pyrvi n reda)
+tail (posledniq)
+ako nqmat file -> stdin
+
+pipe cmd1 | cmd2
+     lqv    desen
+
+cmd1
+	stdin  ==> Terminal
+	stdout ==> stdin cmd2 (beshe Terminal)
+	stderr ==> Terminal
+
+cmd2
+	stdin  ==> stdout cmd1 (beshe terminal)
+	stdout ==> Terminal
+	stderr ==> Terminal
+
+
+| ==> redirects stdout of the left to the stdin of the right operand
+
+
+head -n 157 /etc/passwd | tail -n 1
+dava 157 file
+
+head -n 31 numbers dava pyrvite 31 filea
+
+head -n 31 numbers | tail -n 1
+
+
+samo tail -n 1
+otivat v stdin na tail
+
+
+cat yes no
+
+
+
+cat yes no | cat > cat_dve
+-> cat: no: permission denied
+
+
+---------------------------------
+paste (priema nqkolko file-a i dava redove s format
+syd na file 1 tab syd na file 2 i tn za vs red) merge na koloni
+
+paste a b
+paste a b a
+
+paste os sdp oop up ds2 > all
+-> vschki v kolonki v all
+
+
+--------------------------------------
+wc pesen
+6 25 116 pesen
+1to br redove
+2to br dumi (nenuleva posledovatelnost ot non-whitespace characters
+3to br baitove (simvoli)
+
+wc pesen random
+->statistika za 2ta i statistika za celiq tekst (obshto)
+
+wc bez file -> v\y stdin
+
+cat pesen | wc
+->syshtoto
+cat pesen random | wc (stdin mu e edno nerazdelno cqlo)
+->obshta stat i za dvata
+
+wc -l pesen ->redove
+wc -w pesen ->dumi
+wc -c pesen ->bytove
+wc -m pesen ->simvoli
+
+----------------------------------------------------
+
+cut (vzimame chast ot file-a = kolona)
+
+head /etc/passwd > file
+cat file
+->15 reda s razdeliteli : i ima 7koloni
+
+cut -d : -f 1 file
+(ot delimiter) koe deli kolonite
+(ot fields) koi koloni da vzeme
+
+1,7
+2-5
+
+2- от 2 нататък
+-5 от нач до 5
+
+cut -c 4
+->dava 4ti bait
+
+cut -c 1-4 
+cut -c 1,4
+cut -c 4-
+
+
+cut -d : -f 1,4 file
+cut -d : -f 4,1 file
+->дава 1 и също; защото не можем да задаваме подредбаата
+
+
+-----------------------
+
+tr = translate = zameni simvoli s nesh dr
+
+cat example | tr a X  (tr raboti vyrhu stdina si)
+zamenq vs a-ta s X-ove
+
+cat example | tr abc XYZ (zameni vs malko a s X i tn; ne e nujno da sa posledovatelni)
+
+cat example | tr a-z A-Z (samo v/u ascii table)
+
+cat example | tr -s a
+squeezva aaaabcde do abcde (sviva vs posledovatelnosti do 1)
+
+
+cat example | tr -d a
+trie sreshtaniqta na simvola
+
+-------------------------------------------------
+греп = gnu regular expression pattern 
+tyrsi pattern v text
+ 
+регулярен израз а* * 0 ili poveche povtarqniq na a
+a
+aa
+aaa
+aaaa
+...
+и празна дума
+
+симовли със спец значение и без
+със - *.?+ и тн
+
+* = 0 или повече срещания
+. = кой да е символ
+? = 0 или 1 срещания
++ = 1 или повече срещания
+
+ab+c?d*
+
+a
+ab
+abbbbb
+abbbbc (1 ili 0)
+(0 ili mn na broi d-ta)
+
+
+
+grep (shte polzvame za sega da tyrsi samo text) 
+
+grep kpacu /etc/passwd
+dava vs red v koito ima substring matchvasht patterna
+
+grep -n kpacu etc/passwd
+dava nomera na reda
+
+grep -n -A 1 kpacu /etc/passwd
+(-A after) nashiq red i 1 red sled nego
+
+grep -n -A 1 -B 3 kpacu /etc/passwd
+3 reda predi i 1 sled nashiq
+
+grep -n -C 2 
+dava tolkova na br reda predi i sled nashiq red
+
+grep -i muha animal
+muha
+MUHA 
+
+bez nego samo muha
+
+ot case Insensitive (ne prai razlika m/u malki i gl bukvi)
+
+
+grep -v muha animal
+ot inverted (pravi obratnoto; vs red koito ne e ot patterna)
+
+MUHA
+mravka
+
+grep -v -i muha animal
+mravka
+
+
+MAN STR!!!
+man 7 regex !!!! (vs za regex! cheticheticheti!!!)
+
+
+----------------------------------------------------
+
+sed 
+(stream editor)
+priema opcii i script -> turing complete ezik = vs koeto mojem da napishem 
+na progr ezik, s koito sme pisali, mojem da go napishem na sed
+
+sed 's/sivotata/PESHOOOOO/' pesen
+
+vij linkovete v moodle ;)
+
+'...' <- skript
+s <- substitute (zamesti)
+s/pattern/text/option
+
+sed 's/spo.../RABOTI/m' file (bez file stdin)
+m<-samo edin
+g<-max br (global)
+spo... = vs koeto zapochva sys "spo"
+
+by default "m"
+
+'s/a/B/3' a
+smeni 3toto a s B
+
+
+sed -i '...' 
+inplace -> direktno v/u file-a
+
+---------------------------------------
+awk
+sobstwen ezik, turing complete (cheti tutorial)
+
+awk '...'
+script <- 'begin body end'
+
+begin <- samo vednyj v nachaloto
+end <- samo vednyj v kraq
+body <- za vseki red ot teksta
+
+awk 'BEGIN {print "here we go again"} {print $2} END {print "oh no it's over"}' b
+					body
+$2 spec komanda popylva 2ta kolona ot teksta koito chete
+
+razdelqme komandite s ; v blokovete
+
+
+mojem da izprintim kolkonkite v izberen red
+
+awk '{print $2" "$3}' b
+c b
+c b
+c b
+c b
+c b
+c b
+
+awk -F : '{print $2" "$3}' /etc/passwd
+kazvame koi simvol e delimiter
+(po def izpolzva whitespace za delimiter; tab ili  " " whatever)
+moje i da e '' aka nishto; da razdelq bukvite
+
+moje delimittera da e poveche ot 1 simvola s 'simvoli'
+-------------------------------------------------------
+
+sort
+sortira 
+
+za da sortirame tekst tr znaem koe pred koe se slaga
+
+podredba - nachin da nomerirame elementite na mn-voto (f-q koqto vryshta indeksa na elementa)
+
+
+sort -n numbers
+sortira gi v nummeric red
+
+sort numbers
+лексикографска подредба
+
+-R
+рандъм ->shuffle
+
+sort -n -k 2 stu
+sortirai po 2 kolona po chisla(po default delimiter whitespace)
+
+sort -n -k 2 -t : stu
+делимитъра е : (-t)
+
+-r
+descending order
+
+може да сортираме няколко файла
+sort -n dve numbers
+sortira vs ot dvata file-a
+
+-------------------------------------------------------------------
+uniq
+trie dublicirani poredni redove ot tekst
+(dopuska che teksta e sortiran)
+
+sort tri| uniq (иначе не бачка мн мн)
+
+sort tri | uniq -c
+статистика кой ред колко пъти се среща
+
+----------------------------------------------------------------
+cut -d: -f 7 /etc/passwd | sort | uniq -c | sort -rn | head -n 1 | awk '{ print $2}
+
+кой е най-често използваният логин шел
+=> razbiwame zadachata na malki chast (:
+
+1) намери вс логин шелове които се използват
+2) сортирай информацията
+3) статистика за това кой колко пъти се използва
+4) сортирай статистиката по бр срещания в низходящ ред
+5) само най-често срещания (ака 1ят)
+6) вземи само шела
