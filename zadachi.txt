@@ -1,0 +1,61 @@
+За да се откачите от сесия, към която сте прикачени в момента, използвайте Ctrl-b d (натискате Ctrl-b, пускате го и след това натискате d)
+
+1 shift g za da scrollnem naogre v man stranicata
+
+ZADACHI:
+
+1zad:
+cp /etch/passwd /home/students/s71957
+
+mv /home/students/s71957/passwd my_passwd
+
+
+2zad:
+mkdir -p /home/students/s71957/practice-test/test1
+
+cd ../
+cd practise-test/test1/
+
+touch test.txt
+
+cd ../../
+
+mv /home/students/s71957/practice-test/test1/test.txt .
+
+3zad:
+
+mkdir -p /tmp/os_71957/practice/01/
+cd /tmp/os_71957/practice/01/
+touch f1 f2 f3
+mkdir /home/studens/s71957/dir1
+cp -t /home/students/s71957/dir1 f1 f2 f3
+
+
+4zad: (0601)
+cd /home/students/s71957/
+mkdir dir2
+cd dir2/
+cd ../dir1
+mv f2 /home/students/s71957/dir2/
+cd ../dir2/
+mv f2 numbers
+
+
+5zad: (1200)
+ls -l -d -all /home
+
+
+6zad: (4000)  4 2 1
+touch permissions.txt
+chmod 435 permissions.txt
+chmod uo+r,go+x,g+w permissions.txt
+	
+						owner - read
+						group - write & exec
+						other - read & exec
+						435
+						ugo
+
+7zad: (4100)
+find . -mmin -60
+
