@@ -1,0 +1,190 @@
+df -h =dava kakto df samo che human readable
+df -i -h =info za inode-ite
+df -ih -P =parse-va go na nov red mai?
+du -h DIR = kolko mqsto zaema (p-vo ot diska; kolko baita sa rezervirani zza daden obekt; data blokove)
+(-h) = human readable
+
+
+(vij man str za drte)
+
+
+komanda "stat" !vij man str (idva ot statistics)
+-ime
+-golemina
+-tip file
+-permissions
+-owner
+-grupa
+i tn.
+
+stat -L =promenq def inf za symlinkovete(dava direktno za sochenoto)
+stat -c "%a %s %n" FILE = s %tite-format koito zadavame na outputa %a-pravata v chisla %s-golemina %n-ime
+
+------------------------------------
+
+file extension (razshireniq)
+v GNU Linux nqmat znachenie(most of the time)
+
+cat =dava sydyrjanieto na file-a
+
+ОС не прави разлика между файлове вс са просто байтове
+интерпретацията зависи изцяло от четящия файла
+
+tozi koito pishe i tozi koito chete file-a trqbva da imat ednakva predsava za tova koi bait za kakvo otgovarq
+
+?tozi file matchva li nqkoiot patternite koito znaesh (taka linux znaе kakyv e file-a)
+
+за всеки файл има конвенция
+
+NB! header(инфо за файла) & payload(файла); има и др формати
+
+file /usr/bin/passwodIME  = kazva formata i +nqkvo info
+     (IME na fail prost)
+
+
+broken symlinc = file-yt kym koito soch ine sysht
+
+vim/vi = tekstovi redaktori
+
+man 5 magic (procheti si 5 str za konf file-ove)
+
+-------------------------------------------
+
+
+rabota s tekstovi file-ove:
+
+
+cat (concatenate)
+cat 1iliNqkolkoFileove = i gi printi
+cat pesho
+cat pesho new_file = 1vo pesho posle new_file
+
+cat -n IME = nomeriran output na file-a (ime na red i red) v samiq cat, a ne vyv faila
+cat pesho - new_file = vs ot std::in na cat otiva v std::out
+
+
+
+head = dava nachaloto na file-a
+tail = dava kraq na file-a
+cat = dava celiq file
+
+head FILE = po def dava 1te 10 reda
+tail IME = po def dava posl 10
+head -n CHISLO IME = dava pyrvite CHISLO reda
+tail -n ChISLO IME = analog ot kraq
+
+head -n 4 test = dai pyrvite 4
+head -n -4 test = dai vs bez poslednite 4
+head -n +4 test (ne promenq nishto)
+
+tail -n 4 test
+tail -n -4 test (ne promenq nishto)
+tail -n +4 test (dai mi ot tozi red natatayk)
+
+ako imame fail v koito nqkoi pishe non stop (log file primerno)
+tail -f test = pozvolqva vinagi nov red da se pokazva
+
+
+
+less & more (peidjyri)
+cat ... | more (pozvolqva da razgl syd na faila po lesno)
+cat ... | less (po-moshtna versiq na more; po-moderno s poveche funkcionalnost)
+
+man stranicata se prekarva avtomatichno ot less komandata :)
+
+--------------------------------------------
+dosega txt file-ove
+
+
+xxd (mn vajna za 3 chast na kursa!!!)
+priema ime na file, za koito dava inf za sydyrjanieto mu
+ima 3 smislovi chasti
+
+
+file-ove samo ot bytes xxd dava info kakva e st-ta na vs byte
+
+->1ta - offseta na syotvetniq byte za koito ni e dadena inf vyv 2 chast (16tichna br s-ma)
+->2ta - 8 chasti, vsqka sydyrja hex reprezentaciqta na st-ta na 2 poredni byte-a ot file-a (16 poredni byte-a)
+vsqka kolonka po 2 byte-a
+->3ta - reprezentaciq na syotv byte v ascii table
+v ascii printable (bukvi cifri, simvoli ...)i non printable (nqma gi v ascii => zamestva s ..........)
+
+iskame da razberem sydyrj na file-ovete
+
+ako catnem file, koito ne e txt => garbage (ako e kofti, precakvame terminala => komanda reset (resetva state-a na terminala) ili clear) ctr l shortkut za clear
+
+
+
+xargs = chete redove ot svoq std::in i pozvolqva da izpylnim dr komanda s argumenti prochetenite redove
+
+xargs cat -n
+example
+new_file
+pesho
+=>se podavat kato argumenti na cat i printi cat -n example new_file pesho
+
+pri izvikvane na komanda podavame argumenti prez command line
+mojem da pratim info i na standartniqt im input
+
+xargs chete ot svoq std::in i podava na command line na komandata
+
+po default vs ot in-a se prashta tochno vednyj s edi kolko si argumenti
+xargs -n 2 (cat -n) (-n cifrata pokazva kolko argumenta da priema ot sledvashtite)
+
+xargs -I {} cp {} test (flag koito priema 2 simvola)
+dvete skobi se zamestvat (moje i dr simvoli) - vzima neshtata koito sedqt na mqstoto na 1te skobi i gi premestva na mqstoto na 2te
+
+разделители - уайтспейсове (табулация, нов ред, интервали)
+
+ако искаме да сменим делимитъра:
+xargs -0 => razdeleni s terminirashta 0
+
+-------------------------------------------
+
+find - tyrsim obekti ot file-ova s-ma koito otg na iziskvaniq
+find [options] [starting point] [expression]
+
+-type f =tyrsi samo regular fileove
+
+
+
+man find (cheti!)
+
+
+------------
+2 p-sa : arhivirane, komrpesirane
+arhivirane - ot mn na br file-ve poluchavame 1
+kompresirane - reprezentirame kolichestvo bytes ednoznachno v po-malko
+
+tar, spio za arhivirane
+tar ->kak da arh i kak da extract (moje i da kompr)
+tar -c(ot create)f(za fileove) IMEnaArhiv fileoveZaArhiva
+tar -xf IME
+tar -cJf compressed_archived fileove (stava XZ compressed data)
+J e za arhivirai, no i kompresirai
+
+
+compress, gzip, bzip2, lzma, xz - za kompres
+xz (best za momenta) !man
+
+
+xz IME =kompresira IME.xz
+unxz IME =razkompresira IME
+
+/srv/os/fmi-os/exercises/02.commands direktoriqta
+
+cat imeto na file-a i tn
+
+ako sme v nashata home
+
+ln -s PYTQ tasks
+posle cd tasks => kym dir s u-q
+
+pishem tmux new i bachkame
+tmux new
+ln -s IME takstk
+
+
+ako posl arg na cp e direktoriq => dobaavi v tazi direktoriq papka
+
+relativno: [za da go slojim v dir v koqto sme] . <- na mqstoto na imeto na relativnata dir
