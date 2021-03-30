@@ -1,0 +1,206 @@
+terminal - prozoreca
+bash - programata interpretira
+
+nespec simvoli - asdfghjkl12345678
+spec simvoli - # * ? ! [] $ && || | i tn
+
+Glob - spec simvoli sys znachenie (zamestvat se do imena na file-ove)
+* ? [] 
+(незажисимо от командата)
+
+* - vsichko
+m* - vs fileove koito zapochvat s m
+ime/m* - relativno tyrsene
+
+? - koi da e tochno 1 simvol
+ls -l ? -vadi fileovete s 1 simvol
+ls -l ba? -vs failove s ba_
+
+la -l b?r* -zapochvat s b_r...
+
+[] -tochno 1 ot simvolite vytre
+ls -l b[ae]z - dava baz i bez
+ls -l b[asdfasdfew]z -dava vs koito matchvat
+ls b[a-z]z - vs ot a do z
+
+Brace expanisons
+
+{}
+touch b{a,e,d,r,t}r
+ls -l b{a,e,d,r,muha,mravka,pesho}r - svejda se do abs vsichki
+=> ls -l bar ber bdr brr bmuhar bmravkar bpeshor (a ne samo ti qdeto gi ima)
+
+//ls -l b[ae]
+//-> nqma file b[ae] (ili vs deto matchvat)
+//ls -l b{a,e}
+//-> vsichkite (daje i da gi nqma)
+
+a{} <- vytre syvk ot stringove
+    <- 1..10 a_ ot 1 do 10
+
+moje da se grupirat!
+
+ls -l a{1..10}*
+//ls -l a1* a2* a3* ... a10*
+//-> a1a a1pesho a2* a3pesho a4 a5* a6* a7pesho a8 a9* a10*
+
+
+touch '*' - syzdava file s ime * (v ls sedi '*' no e *)
+ls * -dava vs
+ls '*' -dava *
+
+\ - ne interpretirai simvola sled \ kato spec simcol
+ls -l \* -dava za faila *
+
+' "
+' ' - maha spec znachenie na vs simv m/u tqh
+    - interpretira se bukvkalno
+
+" " - mahat spec znachenie na nqkoi simv m/u tqh
+    - zapazvat na $ \ `
+
+
+
+---------------------------------------------------
+command substitution
+
+echo "test"
+
+$() -interpretira m/u skobite kato komandi
+$( echo "test" )
+ls -l $( echo test ) - izpylnqva (..) i zamestva $.. i vika ls - l test
+
+moje da se nestva
+ls -l $( find $(echo dir1) -type f )
+=ls -l $(find dir1 -type f)
+= find dir1 -type f
+
+ls -l `echo dir1/a dir1/b` (oldieeee)
+=ls -l dir1/a dir1/b
+
+
+----------------------------------------------------
+regular expressions
+
+vseki sam si interpretira
+
+#cmd1 "a+"
+#a+
+#cmd2 "a+"
+#ab ac ad abc
+
+man 7 regex (vajno!!! na tazi tema) 
+
+spec simv . = koito i da e simvol
+cat regex | grep --color b. = ocvetqva ba v bar
+			    = ba ba ba v barbarbar
+(iska da matchne kolkoto moje)
+			    = ba bd bv brbc v barbdrbvrbrbc
+
+\t tab
+\n nov red
+\r carriage return
+\f
+\c
+\x
+
+
+imame file regex
+a
+b
+c
+..
+gosho pesho
+pesho gosho
+
+cat regex | grep pesho --color
+pesho gosho
+gosho pesho
+
+
+cat regex | grep "^pesho" --color =zapochva s dumata
+
+cat regex | grep "pesho$" --color =zavyrshva s dumata
+
+cat regex | grep "^pesho$" --color =prosto pesho
+
+
+\< = nachalo na duma
+\> = krai na duma
+
+cat regex | grep "\<pesho" --color
+pesho gosho
+gosho pesho
+tova e pesho veliki
+
+
+cat regex | grep "pesho" --color
+pesho gosho
+gosho pesho
+tova e pesho veliki
+tavaepeshoneveliki
+
+cat regex | grep "sho\>" --color
+pesho gosho
+gosho pesho
+tova e pesho veliki
+
+
+
+cat regex | grep "b[ae]d" --color
+bad
+bed
+
+[:..:] -predefined
+
+echo 122341234dsda122341 | grep "[[:digit:]a]" --color
+matchva vs cifri i vs a-ta
+
+
+
+[^[:digit:]] -vs koito ne sa cifri
+ako ^ ne e 1 simvol => se priema kato samiq simvol
+
+egrep '^[rb]' /etc/passwd -vs redove zapochvashti s r ili b
+egrep '^[^rb]' /etc/passwd -vs redove nezapochvashti s r ili b
+
+------------------------------------------
+quantifiers
+
+* =0 ili >
++ =1 ili > povtoreniq
+? =0 ili 1
+{} =opredelena broika povtoreniq
+
+
+file :
+a
+aa
+aaa
+aaaa
+aaaaa
+
+iskame redove ot 2 do 4 a-ta
+cat a | grep 'a\{3\}' <- matchva s 3 a-ta
+\{ stava ot bezsmislen v spec simvol
+
+
+capture groups 
+cat file | grep -E --color "(aren)(t).*\2"
+aren->t->...->t
+
+(a|l) ->vs a-ta ili l-ta
+(are|low) -> are ili low (v dumite de (: )
+(pri allow i all|low samo all; izqjda go :) )
+
+---------------------------------------
+textovi redactor vim (vi improved :D )
+
+vim ime-> otivame v normal mode
+:q enter =izhod (ili :q!)
+i =insertion mode => mojem da pishem 
+esc =normal mode
+(za da seifa =>v normal mode i :w)
+:help
+
+vimtutor (pishi i se uchi) ZADYLJE!!!!!!!!!!!!!!!!!!!!
