@@ -1,0 +1,140 @@
+razdeleno na 3:
+owner
+group
+others
+
+read 	 -chetem			-da prochetem imenata na fileovete
+write 	 -promenqme sydyrj		-da syzdavame novi fileove
+execute -syzdavame proces(izpylnqvane)	-da minavame prez neq(da referirame filove i direktorii v neq)
+
+
+
+reprezentacii:
+
+symbol (ls vinagi q pokazva)
+read = r
+write = w
+execute = x
+winagi v podredba: rwx
+nqmame write: r-x
+(9 simvola; pyrvite 3-owner, posle group, posle others)
+
+numeric (3 cifri, csqka za permissioni)
+755 => 
+	7 = 4+2+1 
+	6 = 4+2
+	5 = 4+1
+	4 = 4
+	3 = 2+1
+	2 = 2
+	1 = 1
+	0 = no premissions
+owner 
+	read 4
+	write 2
+	execute 1
+group
+others
+
+owner: kpacu
+group: student
+permissions: 643
+
+kpacu is a member of student - 4 + 2
+pesho is a member of student - 4
+gosho is not a member	     - 2 + 1
+
+
+-------------------------------------------------------
+special permissions (s)
+
+suid в/у директории не прави нищо 
+     в/у екзе файлове ни позволява да изпълним файла в контекста на потребителя който оунва този файл
+	(дава привилегии на някой докато изпълнява файла)
+	!(процеса работи в контекста на потребителя, който притежава файла)
+sgid (същото за групи)
+
+sticky bit	в/у директории: гарантира че само потребител който оунва файл може да го изтрие, независимо от пермишъните
+		в/у файлове нищо
+
+репрезентации:
+4 цифри (не 777, а 6777)
+1та спец перм
+UID 4
+UGD 2
+sticky 1
+
+символни:
+r
+w
+x/s/S/-
+x=execute
+s = execute + special
+S = special
+- = none
+(само при others)
+t = sticky bit + exe
+T = sticky bit
+
+цифри:
+2635
+
+6-> owner rw- =>* rwS
+3-> group -wx => -ws
+5-> other r-x => r-t
+
+2-> ugi =>
+
+pri * 6635
+pri & 7635
+
+
+chmod 000 pesho
+setva permissioni na file
+
+chmod 644 pesho
+=> owner chete i pishe vs ostanali chetat
+
+chmod 7644
+=> S (uid e vdignat bez exe za owner i group; T- sticky bit bez exe)
+
+chmod 7650
+=> ugd s exe + special)
+
+--------------------------------------------------------------
+chmod = change mod (promenq permissioni na file/dir)
+2 nachina : simv reprezent; chislova reprezent
++(kakvi da se dobavqt) -(kakvi da se mahnat)
+chmod -R (promenq permissioni na vs fileove i dir koito se namirat navytre rekursivno) !be careful
+
+
+
+perm = def - umask
+2 tipa def : za dir ; i vs != ot dir
+def dir = 777
+def file = 666
+umask = 022 <- by def(maha perm koito bihme dali za file ili direktoriq; ne pravi nishto s perm koito ne bihme dali)
+man umask (check it out)
+
+perm = def - umask
+
+def umask = 022
+def dir = 777
+def ! dir = 666
+def perm file = 644
+def perm dir = 755
+umask = 027
+perm file = 640 (pomisli si shto)
+
+
+rmdir (remove dir) iztriva dir, no dir trqbva da e prazna
+cp (copy) -> cp source destination
+mv (move) -> preimenuva file (mesti go na novo mqsto) ->mv source destination
+rm (remove) ->trie (rm -r mn carefully; trie vs i ne dava greshka)
+touch -> syzdava fileove, koito ne syshtestvuvat
+
+
+man stat (chetiiiiii)
+
+hard link i triem faila 
+
