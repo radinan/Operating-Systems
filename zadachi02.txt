@@ -1,6 +1,9 @@
 За да се откачите от сесия, към която сте прикачени в момента, използвайте Ctrl-b d (натискате Ctrl-b, пускате го и след това натискате d)
 
-1 shift g za da scrollnem naogre v man stranicata
+1 shift g za da scrollnem naogre v man stranicata 
+/duma (za da tyrsim duma; n->sledvashta shift n->predishna)
+echo ~IME (printi direktoriqta na IME-to)
+
 
 ZADACHI:
 
@@ -59,3 +62,34 @@ chmod uo+r,go+x,g+w permissions.txt
 7zad: (4100)
 find . -mmin -60
 
+8zad: (5000)
+cd /home/students/etc/services
+cp services /home/students/s71957
+cd ...(v home-a mi)
+cat services
+
+9zad: (5200)
+ln -s /home/students/etc/services passwd_symlink
+
+10zad: (5400)
+find /../../etc -type f -ls
+
+11zad: (5401)
+head -n 5 services (services e faila v direktoriqta mi)
+
+12 zad: (5402)
+find /../etc -mindepth 2 -maxdepth 2 -type f -ls
+
+13 zad: (5403)
+find /../../etc -maxdepth 1 -type d -ls
+
+14 zad: (5500)
+(v s71957)
+tail -n 10 zadachi/02-a-5403.txt > copy5403.txt
+
+15 zad: (5501)
+find . -size +42c -type f | ls -l
+
+16 zad: (5504)
+(otivam v tmp)
+id -gn (tekushtata mi grupa)
