@@ -90,6 +90,10 @@ tail -n 10 zadachi/02-a-5403.txt > copy5403.txt
 15 zad: (5501)
 find . -size +42c -type f | ls -l
 
-16 zad: (5504)
-(otivam v tmp)
-id -gn (tekushtata mi grupa)
+16 zad (5504)
+cd /tmp
+id -gn (za tekushtata grupa)
+find . groups students
+
+17 zad (5505)
+find . -newer /tmp/os_2021/practice/01/f1
