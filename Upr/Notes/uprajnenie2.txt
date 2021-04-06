@@ -1,0 +1,337 @@
+ls - (list) дава инф за вс файлове, дир, спец. файлове в директорията, в която сме
+ls -l - по-детайлна инф за файловете
+ls -a - инф и за Hidden файлове (започват с .)
+ls -l-a / -подаваме и път => дава инф за подадената дир
+
+
+touch - ако подадем път до несъществуващ файл, го създава
+mkdir - (make directory) създава директория
+
+вс файл има собственик (owner)
+вс файл се асоц. с група (group)
+вс файл се асоц. с permissions
+
+chown - (change owner) променяме оwner-а на файл; тр да сме root
+chown newUser pathToFile
+chown user:group file_name
+
+chgrp - (change group) сменя групата, която own-ва файл
+
+новосъздаден файл се притежава от създателя и основната му група
+
+ls -l file - дава инф за файла
+-rw-r--r-- 1 user group 0 Mar  2 18:29 file_name
+(perms)(link count)(owner)(owner group)(..)(file name)
+
+(1 символ дава инф за типа на файла:)
+----------------------------------------------------------------------------------------------------
+видове файлове :
+- - regular file (норм текстови файлове)
+b - block special file (хардуерни у-ва; пишем на блокове (прим 512 байта)))
+c - character special file (хардуерни у-ва; пишем char По char)
+d - directory (папки)
+l - sym link (shortcuts)
+p - FIFO (named pipe)
+s - socket
+------------------------------------------------------------------------------------------------------
+Permissions:
+ 
+Owner: (в сила за собственика на файла)
+
+Group: (в сила за групата, която own–ва файла)
+
+Others: (в сила за вс останали)
+
+
+Read 
+(право да чете файл (съдърж))
+(да видим какви файлове има в дир))
+
+Write 
+(право да пише във файл (съдърж))
+(да създаваме/трием нови файлове)
+
+Execute
+(право да изпълнява файл (стартираме процес от файла))
+(да минаваме през дир; да я ползваме)
+
+Репрезентации:
+
+**Numeric** -всяка цифра дава инф за типа: (Owner Group Others) (stat -c)
+755
+
+--------------------
+read    4          |
+write   2          |
+execute 1          |
+                   |
+7 = 4 + 2 + 1      |
+6 = 4 + 2          |
+5 = 4 +     1      |
+4 = 4              |
+3 =     2  + 1     |
+2 =     2          |
+1 =         1      |
+0 = no permissions |
+--------------------
+
+permissions: 643
+owner: user1
+group: student
+
+user1 is a member of student     = read & write    = 4 + 2
+pesho is a member of student     = read            = 4
+gosho is not a member of student = write & execute = 2 + 1
+
+ 
+**Symbol** (ls) -първа ->тип файл; 3 х 3ки (owner->group->others)
+-rw-r--r--
+
+------------------
+read    = r      |
+write   = w      |
+execute = x      |
+------------------
+rwx (вс.)
+r-x (- няма write)
+
+----------------------------------------------------------------------------------------------------------------------
+Sepcial permissions: 
+
+> SUID - set user ID on execution
+(в/у дир => нищо)
+(в/у executable файлове => изпълняваме файла все едно сме owner)
+
+> SGID - set group ID on execution
+(в/у дир => вс обект в дир се създава с групата - оригиналната група на директорията )
+//директория 'a' (owner = root; group = root)
+//правим директория 'b' в директорията 'a' (owner = az; group = root) //a ne moqta grupa (:
+(в/у файлове => изп. в контекста на групата, която притежава файла)
+
+> sticky bit
+(в/у дир => само owner може да го изтрие, независимо от permission-ите (даже и при 777))
+(в/у файлове => нищо)
+
+=>
+Цифрова (4 цифри, а не 3)
+0777
+UID        = 4
+GID        = 2
+sticky bit = 1
+
+Символна (променяме x-а)
+
+r
+w
+x/s/S/-/t
+
+x = execute
+s = execute + special
+S = special
+t = execute + special (za others; sticky bit)
+T = special (za others)
+- = none
+
+
+5614
+rwS--xr--T
+
+2635
+rw--ws-r-x
+
+6635
+rwS-ws-r-x
+
+7635
+rwS-ws-r-t
+----------------------------------------------------------------------------------------------------------------
+chmod - променя Permission-ите на файлове/дир
+> chmod 0664 foo.txt
+> chmod u=rw,g=rw,o=r foo.txt
+> +,-,=
+chmod -R - (recursive) променя вс навътре рекурсивно
+-----------------------------------------------------------------------------------------------------------------
+perm = def - umask
+
+def dir   = 777
+def ! dir = 666 (files) 
+def umask = 022
+
+def perm file = 644
+def perm dir = 755
+
+umask =027
+perm file = 640 (не може да махне невдигнати Permission-и)
+------------------------------------------------------------------------------------------------------------------
+mkdir - създава директория
+      mkdir -p
+      mkdir -m
+rmdir - премахва празна директория 
+cp - (copy) //cp source destination (имаме from; pesho => cp from to => from; pesho; to => cp to kopie => from; kopie; pesho; to)
+     cp -r dir1 dir2 (мести директория)
+mv - (move) //mv from destination (rename) (mv from destination => destination; kopie; pesho; to)
+rm - (remove) трие
+rm -r - (remove recursive)
+touch - променя mtime/atime (или създава файла, ако го няма)
+
+--------------------------------------------------------------------------------------------------------------------
+Файловите с-ми са структура от данни (като по СД)
+               винаги заемат определено количество байтове, ясни в момента на създаване
+
+==) File system:
+ _________________________________
+| Super Block | Data blocks array |
+ ---------------------------------
+
+===) Data blocks array:
+ __________________________________________________
+| data block 1 | data block 2 | ... | data block N |
+ --------------------------------------------------
+ (най-малките парчета инф., с които можем да работим)
+
+====) Super block
+ _________________________________
+| Meta Information | Inodes Table |
+ ---------------------------------
+(за с-мата като цяло)
+
+=====) Meta Information
+ ________________________________________________________________
+|  FS Type  |          Block size           | lotta other things |
+ ----------------------------------------------------------------
+(тип на с-ма)(големина в байтове на блоковете)(др.)
+
+=====) Inodes Table
+ ___________________________________
+| Inode 1 | Inode 2 | ... | Inode N |
+ -----------------------------------
+(ел. от тип Inode = стр-ра)
+
+======) Inode
+ ______________________________________
+| Meta Information | Data Blocks Array |
+ --------------------------------------
+
+
+=======) Meta Information:
+инфо за файла:
+> permissions
+> access time (за посл. отварян), 
+  modification time (за посл. променяно съдърж.),
+  inode change time (за посл. променяно съдърж/метаинф)
+> owner
+> group
+> size in bytes
+> occupied blocks
+> link count (names of the inode)
+> inode number
+
+=======) Data Blocks Array
+съдържание на файла
+ 
+https://learn.fmi.uni-sofia.bg/pluginfile.php/315143/mod_resource/content/1/02.files.pdf
+14 слайд
+
+inode pointer structure 
+-15 елемента
+-първите 12 - direct blocks - са номер на data block, в който седи съдърж. на файла
+-взимаме нов data block, само ако предишните са запълнени напълно
+-13ти - indirect block
+-14ти - double indirect block
+
+elements of the array:
+1-12 - pointers to data block
+13 -                        array  with pointers to data blocks
+14 -            array  with arrays with pointers
+15 - array with arrays with arrays with pointers
+
+-----------------------------------------------------------------------------------------------------------
+Hard links
+ново име на вече съществуващ файл
+триене на хардлинк не променя оригинала
+при създаване не хабим нови data blocks
+не може да имаме хардлинкове в 2 разл. файлови системи
+не може към несъществуващ файл
+не може към директории
+
+
+baba.txt----/     __________
+           /---> |   Data   |
+                 |----------|
+                 | Eat your |
+                 | cookies! |  
+            /---> ---------- 
+dqdo.txt---/
+
+dqdo.txt асоцииран с inode-a на baba.txt
+
+
+/home/kpacu/file1
+         inode - 57
+                 meta info for file1
+                 content of file1
+/home/kpacu/file2
+          inode - 169 (различни Inodes за вс файл)
+/home/kpacu/file3
+          inode - 281
+/home/kpacu/hardlink (като променим hardlink ще променяме file1)
+          inode - 57 (асоцииран с inode, който вече е асоцииран)
+
+ln todo todo_2 - създава хардлинк todo_2 към файла todo (за файловата система няма значение кой е създаден първи)
+----------------------------------------------------------------------------------------------------------------
+Symbolic links
+спец файлове, чието съдържание е път до друг файл
+(shortcuts)
+отделя се Inode с инф за симлинка
+могат да сочат дир
+могат да сочат несъществуващи файлове
+може към др ФС
+
+
+ln -s todo todo2 - създаване на симлинк
+-----------------------------------------------------------------------------------------------------------------
+ФС1:
+/dir1
+	/file1
+	/file2
+/dir2
+	/file3
+/dir3
+	/file4
+
+ФС2:
+/a
+	/1
+	/2
+/b
+	/3
+/c (nova)
+	/dir1
+		/file1
+		/file2
+	/dir2
+		/file3
+	/dir3
+		/file4
+
+(можем да ги закачим една за друга)
+
+
+
+въпроси на ФС:
+
+df - (disk free) колко от ФС използваме
+|Filesystem    1K-blocks   Used  Available Uses  Mounted on|
+|/dev/vda1     8189368   2606744  6146912   21%    /       | нач на файлова с-ма
+|tmpfs         404112      492    403620     1%    /run    | др. файлова система (закачена в /run)
+df -h - human readable format (не в байтове а в GB, Mb...)
+df -i - не за заетите байтове, а за заетите Inodes
+
+du - (disk usage) инфо за това кой файл/дир колко място заема
+du --max-depth - По-sumarisedната информация
+du -h - human readable 
+
+stat - дава инф за даден файл/дир (по подробна от ls)
+(име, колко байта във файла, колко блока за репрезент., тип на файла, премишъни, оунър и група, mtime, ctime, birth time)
+
+
