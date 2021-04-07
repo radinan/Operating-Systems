@@ -104,3 +104,14 @@ find ~ -newer /tmp/os_2021/practice/01/f1/ -exec rm -fi {} \;
 19 zad (6000)
 find /bin -perm 0777
 find /bin -perm -u=rwx,g=rwx,o=rwx
+
+20 zad (8000)
+(otivam v home-a)
+find /bin -perm 0777 -exec cp -t bin2 {} \;
+
+21 zad (9000)
+tar -cf b_start.tar btrfsck bzcmp bzegrep bzfgrep bzless
+
+22 zad (9500)
+find /etc -type f -exec wc -l {} \;
+(ако трябва само номерата??)
