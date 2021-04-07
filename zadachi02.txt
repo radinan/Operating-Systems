@@ -97,3 +97,10 @@ find . groups students
 
 17 zad (5505)
 find . -newer /tmp/os_2021/practice/01/f1
+
+18 zad (5506)
+find ~ -newer /tmp/os_2021/practice/01/f1/ -exec rm -fi {} \;
+
+19 zad (6000)
+find /bin -perm 0777
+find /bin -perm -u=rwx,g=rwx,o=rwx
