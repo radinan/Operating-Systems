@@ -1,0 +1,220 @@
+Процеси
+
+има изпълними файлове (execute permission)
+binary - спец формат, от който ОС знае как да направи п-с
+process - binary файл по вр на изпълнението му
+
+file /bin/cat
+cat /etc/passwd
+
+thread - execution unit (п-с може да има мн-во тредове)
+         (разл части могат да се изпълняват едновременно)
+	 (споделят памет)
+scheduling - определя по вс време 1 п-с сменян от (долното)
+context switch - променяме кой п-с да се изпълнява
+
+-----------------------------------------------
+
+>PID (Process ID) - не може да има 2 п-са с еднакви пид-а (докато са живи; после се освобождава)
+>priority & nice value - някои п-си имат повече нужда от ресурси (по-голем приоритет)
+>memory - вс п-с има собствен memory space; ако опита да достъпи чужда памет => терминиран
+>security context - п-сите могат да се опитват да правят неща
+
+вс п-с има сетове:
+Real (кой п-с къде може да праща сигнали)
+	user id           ==> User ID
+	group id          ==> Active group ID
+	
+	Signal checks made against these.
+
+Effective (проверки за права)
+	user id           ==> Same real, unless set SUID bit
+			  If SUID ==> Same as file's owner
+	group id          ==> Same real, unless set SGID bit
+			  If SGID ==> Same as file's group
+
+	Nearly all checks
+
+Saved (променяме на горните 2 по-гъвкаво)
+	user id           ==> User ID
+	group id          ==> Active group ID
+	
+	Used to change real/effective IDs
+
+user: kpacu:student
+file: rwxrwxrwx root:teachers
+
+R:
+	user  - kpacu
+	group - student
+E:
+	user  - kpacu
+	group - student
+S:
+	user  - kpacu
+	group - student
+
+user: kpacu:student
+file: rwsrwxrwx root:teachers
+
+R:
+	user  - kpacu
+	group - student
+E:
+	user  - root
+	group - student
+S:
+	user  - kpacu
+	group - student
+
+user: kpacu:student
+file: rwsrwsrwt root:teachers (sticky bit-a няма отношение)
+
+R:
+	user  - kpacu
+	group - student
+E:
+	user  - root
+	group - teachers
+S:
+	user  - kpacu
+	group - student
+
+owner group other
+rwx    rwx   rwx
+
+>environment - промемнливи 
+>file handles (file descriptors) - вс п-с си ги има (никаквите се броят за някакви)
+
+------------------------------------------------------------------------------------------
+
+Process creation
+
+>kernel - създава първия п-с (по някакъв начин (: ) init process
+>init (PID 1) - довежда с-мата до състояние, в което можем да работим
+>child process - (фамилна йерархия) п-с А форква п-с Б => п-с А е родител на п-с Б и п-с Б е дете на п-с А
+A
+|
+|
+fork()  B
+|	|
+|	|
+|	fork() C
+|	|      fork() D
+................
+A parent of B
+B parent of C
+B child of A
+C child of B
+A grandparent C
+A grandparent D
+
+>ps & pstree - визуализират п-сите в момента 
+(чети man ps //kakto man i stat!!!!!!!!!!)
+
+>fork() – механизъм за създаване на процес (прави се почти точно копие на вече съществуващ)
+>exec() - подменя кой е файлът, който изпълняваме по вр на п-са
+
+cat /etc/passwd | wc -l
+
+-------------------------------------------------------------------------------------------
+
+Process scheduling
+
+>niceness (nice value) [-20,19] - ст-ст, която определя колко ресулс да получи п-са
+(колкото по-нисък, толкова повече ресурс)
+
+nice -n 15 foo - стартира п-с с определен Niceness
+nice - виждме найснеса на шела, който ползваме
+(пц новия п-с има същия като найснес баща си)
+(>= найснес по дефолт)
+nice - 0
+nice -n 10 bash
+nice = 10
+exit
+nice -n 10 nice = 10 
+nice -n 2 nice => ne stavaaa
+
+renice 15 <pid> - сменяме найснеса на п-с който вече работи (ако сме привилегировани вс; непривилиг. - само за своите)
+
+(man nice, man renice!!)
+
+---------------------------------------------------------------------------------------------------------------------
+
+Viewing processes
+
+>/proc - фс, дървовидна йерархия, файловете не са реални файлове,интърфейс на работещите п-си в момента
+>ps (п-сите в текущата сесия)
+	>ps -e (инф за вс п-си активни в момента)
+	>ps -еf (променя колонките, които се изписват)
+	>ps -eo pid,cmd,ppid (o za output; изброяваме филдове) => по-лесно за парсване
+	>ps -u s93416 (komandi za potrebitel v momenta)
+	>ps -e -o user, pid
+	>ps -o pid=process,user=account
+	>ps -u kpacu -o pid= -o user= (moje i multiple -o flag) 
+2 vida syntax: BSD i VsV
+>top, htop, atop
+i 3te inf za p-site kakyv proces qdat
+(interaktivni)
+
+---------------------------------------------------------------------------------------------
+
+Signals
+
+числови ст-ти, които п-сите си пращат
+signal handler - izpylnqva se kato p-sa poluchi signal
+sigkill -ubivame go
+sigturn -umira sam
+
+man 7 signal (cheti bby)
+
+SIGHUP(1)
+SIGINT(2)
+SIGQUIT(3)
+SIGKILL(9)
+SIGSEGV(11)
+SIGTERM(15)
+SIGSTOP(19)
+(st-ti na signalite)
+
+------------------------------------
+kak i koi na kogo prashta signali ?
+
+za da moje p-s da prati signal na dr p-s ili real id-tata na p-site da syvpadat, ili ?
+
+kill signal <pid>
+
+kill -9 25599    -> Killed
+(ne moje da prashtame na chujd)
+
+killall signal <ime_na_komanda>
+killall -9 bash - prashta signal na vs p-si koito sa izpylnili komandata
+
+ctrl + z prashta sig stop (spira izpylnenieto na p-sa koito sme zadali predi tova)
+------------------------------------------------------------------------------------------------
+
+
+SHELLS & SHELL SCRIPTING
+
+(startirame kato napishem imeto)
+sh
+dash
+bash
+...
+(exit ili ctrl+d)
+
+-------------------------------------------------------------------------------------
+
+sh
+
+source source_me - chetem file, interpretirame syd mu kato komandi
+
+----------------------------------------------------------------------------
+
+bash ( po gotin)
+
+..za dopisvane
+
+
+
+
