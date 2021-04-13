@@ -1,0 +1,442 @@
+| 2 ЧАСТ НА КУРСА |
+|=================|
+
+-Процеси-
+
+изпълним файл - файл, който съдържа код, който  може да бъде изпълнен от ос
+
+езици, които се компилират - код + компилатор = изпълним файл (файл във формат прим lef)
+езици, които се интерпретират - код + интерпретатор = изпълним файл
+
+>binary files = файлове, от които стартираме п-си 
+
+>process = изпълним файл (binary file) по време на изпълнението му (стр-ра, с която ОС работи)
+(от 1 файл -> мн п-си; 1 п-с от 1 файл)
+file /bin/cat - виждаме че /bin/cat е ELF 64-bit
+
+
+>threads = execution entity-та (достъп до цялата памет на п-са=споделят памет); паралелно изпълнение; 
+(1 п-с може да има много тредове)
+
+може да имаме повече от 1 стартирани п-си (не се изпълняват едновременно)
+ОС сменя мн бързо п-сите => изглежда все едно работят паралелно
+
+>scheduling = парче от ОС, което определя правила за определяне кой п-с ще получи процесорно време
+(не вс п-си са равни помежду си; определяне на по-важните п-си) 
+
+>context switch = механизъм, който позволява да сменяме изпълнимия п-с
+
+---------------------------------------------------------------------------------------------------------------------
+
+Процеси
+
+>PID (Process ID) = уник. идентификатор на п-с (ако убием п-с, PID-а се присвоява на друг жив)
+					       (във вс един момент, PID-овете са уникални)
+
+>priority & nice value = някои п-си са по-важни; scheduling-а се влияе от priority-то и niceness-a на п-са
+
+niceness (въз основа на < =>определяме приоритета на п-са)
+голям niceness = малък приоритет (защото е склонен да отстъпи време на друг п-с <3 )
+малък niceness = голям приоритет
+
+
+>memory = всеки п-с има определен memory space, с който може да работи
+(ако п-с опита да достъпи чужда памет => бива убит)
+
+>security context = на база на него ОС решава дали п-са има право да го направи
+
+(вс п-с е стартиран от даден потребител)
+вс п-с има 3 setID-та:
+
+Real ID: (на какви п-си може да праща сигнали)
+     user ID  ==> User ID of the creator
+     group ID ==> Group ID of the creator's active group
+
+Effective ID: (има ли права за да прави нещо)
+     user ID  ==> no special perms => same as real
+	      ==> if SUID => = file's owner
+     group ID ==> no special perms => same as real
+	      ==> if SUID => = file's group
+
+SavedID: (за да може п-сите свободно да си сменят ефектив ид-тата)
+     user ID  ==> same as real
+     group ID ==> same as real
+
+
+Примери:
+
+1)
+kpacu:teachers
+rwxrwxrwx root:pesho executable
+
+Ruid: kpacu
+Rgid: teachers
+
+Euid: kpacu
+Egid: teachers
+
+Suid: kpacu
+Sgid: teachers
+
+
+2)
+kpacu:teachers
+rwsrwsrwx root:pesho executable
+
+Ruid: kpacu
+Rgid: teachers
+
+Euid: root
+Egid: pesho
+
+Suid: kpacu
+Sgid: teachers
+
+3)
+kpacu:teachers
+rwsrwxrwx root:pesho executable
+
+Ruid: kpacu
+Rgid: teachers
+
+Euid: root
+Egid: teachers
+
+Suid: kpacu
+Sgid: teachers
+
+
+>environment = количество от променливи, до които п-са има достъп
+
+>file handles (file descriptors) = стр-ра от ОС, която п-сите използват, за да работят с файлове
+
+
+--------------------------------------------------------------------------------------------------------------
+Създаване на процеси
+
+>kernel = ядрото; стартира 1-я п-с в ОС
+>init (PID 1) = 1-а п-с от ^ ; довежда машината в state за ползване (прародител на вс)
+>child process = форкнатия п-с (родител на родител = прародител)
+>fork = п-с прави почти точно копие на себе си
+>exec = механизъм, чрез който 1 п-с подменя файла, който изпълнява
+>ps & pstree = визуализира п-сите в момента
+
+--------------------------------------------------------------------------------------------------------------
+Process scheduling
+
+>niceness [-20,19]
+(колкото по-нисък => толкова по-вероятно е да получи ресурс)
+
+(непривилегирован п-с не може да създаде п-с с по-нисък niceness lvl от родителя му)
+(ДЕЦАТА СА NICER)
+
+>nice -n 15 func 
+nice - дава niceness-а на shell-a (0)
+nice -n -5 cat kirilica -> грешка
+nice -n 5 cat kirilica  -> успешно
+
+>renice 15 <pid>
+(непривилиг. потребители могад да променят само на техните; real/effective id-тата съвпадат)
+
+PRocess ID    niceness
+100           0            (непривилегирован)
+101           0
+102           0,1,2,3...19
+
+1000          0	            (привилегирован; effective id-то не е като real)
+1001          -5
+1002          -19
+1003          [-20,19]
+
+--------------------------------------------------------------------------------------------------------------
+ps команда
+
+различни видове файлови системи 
+(например procfs = Интърфейс м/у фс и ос)
+(има директории, които репрезентират п-си)
+(ако изберем дир(които са пидове) => файлове, репрезентиращи инф за п-сите в ос-то)
+
+(!!!!!!!!!!!!!!!!!!!man ps!!!!!!!!!!!!!!!!)
+>ps ( find за п-си (: ) (дава инф за п-сите в текущата сесия)
+
+ps -e - инструктира инф за вс п-си които работят в момента 
+(PID, TTY(контролен терминал), TIME, CMD(коя е командата, която е стартирана))
+
+ps -ef - (f=specify output format при cmd) 
+(UID, PID, PPID=parent PID, ...)
+
+ps -o uid,pid,ppid - (o=output)  избираме какво да вади
+ps -eo uid,pid,ppid - дава ^ за вс п-си
+
+ps -u kpacu - инф за вс п-си на потребител kpacu
+
+ps -u kpacu -o pid=process,user=account - променяме имената на колонките в аутпута
+ps -u kpacu -o pid= -o user= -скипваме хедъра
+
+ps aux - инф (човешка) за п-сите
+
+(за получаване на информация какви п-си има и какъв ресур хабят) (man страници...)
+(неудобни за автоматизация; удобни за гледане)
+top
+htop
+atop
+
+в /srv/os/fmi-os/exercises/04.processes/ <-задачи 04
+
+--------------------------------------------------------------------------------------------------------------
+сигнали - начин за комуникация м/у п-сите
+(число; не се предава data)
+
+SIGHUP(1)
+SIGINT(2)
+SIGQUIT(3)
+SIGKILL(9)
+SIGSEGV(11)
+SIGTERM(15)
+SIGSTOP(19)
+(ст-та на сигнала)
+
+сигнали обработени от : 1)kernel  (sigkill = терминиране) (само ако нищо др не работи)
+				  (sigstop)
+			2)process (sigturn = самоубий се)
+
+signal handler - парче код, което се изпълнява, като п-с получи даден сигнал
+
+(!!!!!!!!!!!!!!!!man 7 signal!!!!!!!!!!!!!)
+--------------------------------------------------------------------------------------------------------------
+Sending signals
+
+>kill <signal> <pid> - праща сигнал на п-с
+
+>killall <name>
+
+за да убием п-с
+ctrl + C праща SIGINT
+
+--------------------------------------------------------------------------------------------------------------
+
+--<{ Command shells and shell scripting }>--
+
+command shell
+>user-interface
+>позволява достъп до ФС
+>позволява да пишем скриптове
+>позволява да стартираме п-си
+>позволява process control
+
+Bourne Again SHell
+
+
+При стартиране на сесия (прим в астеро) -> получаване на шел
+head /etc/passwd - последната колонка е видът на шеловете
+cut -d : -f 7 /etc/passwd | sort | uniq - и виждаме кои ползваме за ловането
+cat /etc/shells - виждаме вс
+
+man chsh 
+chsh (избираме един от /etc/shells)
+за да идем в шел просто му пишем името (както при командите)
+
+echo $SHELL - дава текущия шел, който използваме
+(ps -f за да видим че е така)
+
+--------------------------------------------------------------------------------------------------------------
+sh
+
+
+source source_me - приема файл, чието съдържание изпълнява като валидни команди
+. source_me - същото
+echo $PS1 - спец променлива, която дефинира prompt (това което седи вляво като пишем винаги)
+export PS1="Tova e glupav prompt: "
+PS1 =test -същото 
+
+--------------------------------------------------------------------------------------------------------------
+bash
+
+
+backwards compatible with sh (вс на sh работи и за bash)
+history - история за вс, дето сме писали
+>tab< - за autocompletion (на имена на файлове, дир, команди...) (tab tab->вс команди–
+
+alias ll='ls -la' -винаги като напишем ll в нач на реда ще се изпълнява ls-la
+alias test ='echo "tova raboti"' -винаги като напишем test вади tova raboti
+
+~ = alias за home directory
+
+има config файлове, които се сорсват при изпълнение
+
+--------------------------------------------------------------------------------------------------------------
+Променливи
+
+ime_na_promenliva=50
+$ime_na_promenliva - при използване
+echo $ime_na_promenliva - вади 50
+
+var=string
+echo $var - вади string
+var=nova_stoinost
+echo $var - вади nova_stoinost
+
+ако искаме да има интервал => тр да се ескейпне
+var="tove e multi word string"
+var=tova e multi word string - грешка!
+var =ime_na_komanda - ст-ста е команда
+
+
+2 вида:
+shell променливи - можем да ги ползваме само в контекста на текущия п-с (детето няма достъп до тях)
+environmental променливи - наследяват се (детето има копие на env променливите на бащата)
+ |
+ |
+\|/
+export kpacu="Env var"
+
+(като отворим bash и echo kpacu -> вади Env var; копие по стойност, ака не променя оригинала)
+(иначе, като отворим bash със shell променливата, echo-то няма да изведе нищо)
+
+
+var="Student"
+vara="Teacher"
+
+echo "$vara" - вади Teacher ($ гледа макс дълъг стринг)
+echo "${var}aaaa" - вади Studentaaaa
+echo "${vara}aaa" - вади Teacheraaa
+
+
+
+файлове aa, ab
+var="aa ab"
+cat $var = cat aa ab
+
+имаме файл 'aa ab'
+cat $var = cat aa ab = съд на aa и ab
+cat "$var" = cat "aa ab" = съдърж на 'aa ab'
+
+
+важни порменливи:
+echo $PATH - при изпълнение на команда bash Минава през вс директории от $PATH и търси командата къде е
+(ако счупим PATH aka PATH="")
+(cat aa - спира да работи)
+(/bin/cat aa - обаче работи)
+env - всички сетнати спец променливи
+
+var=test
+unset var - маха променливата
+
+
+echo $PWD - същото като pwd
+
+$PATH
+$PWD
+$TERM
+$SHELL
+$HOME
+$USER
+$DISPLAY
+$EDITOR
+$VISUAL
+
+--------------------------------------------------------------------------------------------------------------
+Shell scripts
+
+mkdir shell
+cd shell/
+vi script.sh
+
+задължително в началото:(казва на ос че е bash script)
+#!/bin/bash
+
+echo "Hello world"
+
+
+за да можем да изпълним:
+chmod 744 script.sh -даваме execute perms
+./script.sh -даваме път до него (няма зн какъв)
+
+
+
+vi script_maker.sh
+
+>вътре:<
+#!/bin/bash
+vim script.sh
+chmod 744 script.sh
+-------------------
+chmod 744 script_maker.sh
+./script_maker.sh
+
+>вътре:<
+#!/bin/bash
+echo "neshtosi"
+---------------
+
+
+
+
+vi script.sh
+-------------
+#!/bin/bash
+echo "Pyrvi cmd line arg: $1"
+echo "Vtori cmd line arg: $2"
+echo "Treti cmd line arg: $3"
+-------------
+./script.sh edno dve tri
+->Pyrvi cmd line arg: edno
+->Vtori cmd line arg: dve
+->Treti cmd line arg: tri
+
+./script.sh edno dve 
+->Pyrvi cmd line arg: edno
+->Vtori cmd line arg: dve
+->Treti cmd line arg: 
+
+./script.sh edno dve "tri ima space"
+->Pyrvi cmd line arg: edno
+->Vtori cmd line arg: dve
+->Treti cmd line arg: tri ima space
+
+
+vi script.sh
+-------------
+#!/bin/bash
+echo "Pyrvi cmd line arg: $1"
+echo "Vtori cmd line arg: $2"
+echo "Treti cmd line arg: $3"
+
+echo "All cmd line args: $@"
+echo "Again: $*"
+echo "Number of cmd line args: $#"
+-------------
+./script.sh edno dve "tri ima space"
+->Pyrvi cmd line arg: edno
+->Vtori cmd line arg: dve
+->Treti cmd line arg: tri ima space
+->All cmd line args: edno dve tri ima space
+->Again: edno dve tri ima space
+->Number of cmd line args: 3
+
+
+при shift Командата n-тият елемент става = на n+1вия
+а първия се discard-ва
+(приема число = колко наляво да избутаме аргументите прим shift 2)
+-------------
+#!/bin/bash
+
+echo "First before shift: $1"
+echo "2nd before shift: $2"
+
+shift
+
+echo "First after shift: $1"
+echo "2nd after shift: $2"
+-------------
+./script.sh edno dve tri
+->First before shift: edno
+->2nd before shift: dve
+->First after shift: dve
+->2nd after shift: tri
+
+
+
+
+
+
