@@ -1,0 +1,274 @@
+find /etc -type -f - вс. файлове от /etc
+find /etc -type -f -exec stat -c "%n %s" {} \; - вадим име и size (exec за вс един от обектите от find
+# -exec cmd \; - syntax for exec (escapevame ; s \)
+
+--------------------------------------------------------------------------------------------------
+
+Redirections (пренасочване на стриймове)
+
+3 стрийма
+-stdin (0)  - четене на инф
+-stdout (1) - записва инф 
+-stderr (2) - записва инф за "нередности"
+
+по default всеки стрийм е асоцииран с терминала, който ползваме
+
+
+<
+команда < файл - команда, чийто stdin да пренасочи; файл, към който да пренасочи stdin-а на командата
+cat < file - (cat чете от стдина докато ctrl+d)
+cat example - example - чети от файла, после от stdin-а, после от файла
+cat example - example < yes - принти съд на example; съд на yes; съд на example (stdin пренасочен към yes)
+cat file1 < file2 - само вади съдърж на file1, защото cat не ползва stdin-а си в слуая 
+
+1> или
+>
+file descriptor > file/&file descriptor - (за да четем/пишем във файл, тр файлов дискриптор)
+cat example (принти example)
+cat example > new_file (принти example в new_file)
+cat example example > new_file (принти 2 пъти example в new_file)
+(ако файлът като десен аргумент не съществува => бива създаден)
+(ако файлът като десен аргумент    съществува => съд му се изтрива и се записва новото)
+cat yes > new_file   } едно и
+cat yes 1> new_file  } също е
+ls -l > ls_output - (може и с др команди ;) )
+
+2>
+cat yes 2> new_file
+cat yes no 2> stderr - на stdin-а (терминала) - съдърж на yes; във файл stderr - съдърж на грешката (cat: no: Permission denied)
+
+смесвания:
+cat yes no 2> stderr 1> stdout - във файл stderr (грешката от no); във файл stdout (съдърж на yes)
+cat yes - no 2> stderr 1> stdout < example - във файл stderr (грешката от no); във файл stdout (съдърж на yes и example)
+(тиренцето казва на кат - чети вс от stdin и пиши вс на stdout)
+cat file1 file2 ... fileN - fileN+1 ... - чете от file1 до fileN => чете от stdin => чете от fileN+1 ...
+cat file1 - < file2 - съд на file1, после на file2
+cat - file1 < file2 - съд на file2, после на file1
+
+>>
+file_descriptor >> file/&file_descriptor
+cat yes >> std_append - по същия начин като >, но не презаписва, а добавя накрая (ако съществува)
+
+2>>
+cat no 2>> stderr_append - по същия начин за stderr
+
+
+&file_descriptor:
+cat yes no 1> out 2>&1 - redirect stderr натам, накъдето сочи stderr; a не stderr към stdout
+cat yes no 2>&1 1> out - принти на терминала, защото в момента на оценяване на 2>&1 stdout сочи към терминала
+(оценяват се отляво надясно)
+
+&> 
+cat yes no &> both - пренасочва и stdout, и stderr
+cat yes no 2> both 1>&2 - същото
+cat yes no 1> try 2> try - редиректва само stderr
+
+(файлът е с абсолютен или релативен път):
+cat yes > /home/students/s71957/abs_path - (не е нужно само в текушата; може и в др)
+cat yes > rel_path
+------------------------------------------------------------------------------------------------
+
+/dev/null -вс, което се запише - изчезва (черна дупка)
+(винаги празен)
+(прим да насочим stderr натам, защото не ни вълнуват грешките)
+cat yes > /dev/null 
+
+-------------------------------------------------------------------------------------
+
+Pipes
+  |
+
+left_cmd | right_cmd
+
+=) left_cmd
+	stdin  ==> Terminal
+	stdout ==> Terminal (=right_cmd)
+	stderr ==> Terminal
+
+=) right_cmd
+	stdin  ==> Terminal (=left_cmd)
+	stdout ==> Terminal
+	stderr ==> Terminal
+
+pipe - редиректва stdout на левия към stdin на десния
+
+numbers(има 24 реда)
+head -n 17 numbers - взимаме първите 17 реда
+tail -n 1 numbers - взимаме последния ред
+head -n 17 numbers | tail -n 1 - взимаме 17тия (последния от 1те 17)
+
+cmd1 | cmd2 | cmd3 | cmd4 | cmd5
+cmd5(cmd4(cmd3(cmd2(cmd1))))
+
+---------
+Пример1:
+---------
+cat yes - no 2>err < in | head -n 15 > wtf - cat чете yes, in, no; (дава съдърж на yes + in)
+                                             stderr -> err; 
+                                             head взима 15те реда от cat 
+                                             (т.е единствения ред на yes + 14 реда от in)
+
+cat
+	yes
+	-
+	no
+		2>err
+		< in
+|
+head
+	-n 15
+		> wtf
+
+==) Streams
+	cat
+		stdin  file in
+		stdout head stdin
+		stderr file err
+	head 
+		stdin  cat stdout
+		stdout file wtf
+		stderr Terminal
+
+---------
+Пример2:
+---------
+head -n 4 /etch/passwd /root/error_File - дава 1те 4 реда от файл1 и от файл2
+head -n 4 /etc/passwd /root/error_File 2> head_еrr - редиректваме стдерр към фафйл3
+head -n 4 /etc/passwd /root/error_File 2> head_еrr | tail -n 1 - вади последния ред от stduot на cat (файл1 в случая)
+head -n 4 /etc/passwd /root/error_File 2> head_еrr | tail -n 1 | tail -c 6 - взима последните 6 байта от stdout на tail -n 1 (login + \n)
+(може да редиректваме във всяка част)
+head -n 4 /etc/passwd /root/error_File 2> head_еrr | tail -n 1 2> tail_Err | tail -c 6 > out_file
+(ако няма еррър, файловете се създават и са празни)
+
+(пайпа редиректва само stdout на левия към stdin на десния)
+cat yes no | head -n 1 > head
+->cat: no: Permission denied (от stderr на cat)
+->cat head
+	->content of the file yes (от stdout на head)
+
+--------------------------------------------------------------------------------------------------
+
+paste - merge-ва по колонки съдържанието на файлове
+
+имаме файлове oop, sdp, ds2, os всеки с оценките на вс хора по даден предмет
+ако искаме да ги съединим:
+paste oop sdp ds2 os
+    -> 2   3   5   2 <- 1 ред от вс файл   
+    -> 2   3   6   6 <- 2 ред от вс файл
+    -> 2   3   2   4 <- 3 ред от вс файл
+    -> ...
+(ако няма някой ред в колонка, го оставя празно)
+
+----------------------------------------------------------------------------------------
+
+wc file- (words count) дава статистика за бр редове, бр думи и бр байтове
+wc -(без аргументи) в/у stdin 
+(дума = последователност от non-whitespace character символи)
+wc file1 file2 - дава статистика за file1, file2 и общо
+
+wc -l file - бр редове
+wc -w file - бр думи
+wc -c file - бр байтове
+wc -m file - бр символи
+
+cat /etc/passwd | wc -l - колко реда има във файл
+wc -l /etc/passwd - еквивал. (ама дава и името)
+
+--------------------------------------------------------------------------------------------------
+
+cut - дава секция от файл (най-често колона)
+(секция - колонка/символ)
+(колоните се определят от разделител)
+
+cut -f 1 file - дава само 1 колона
+cut -f 2 file - дава само 2 колона
+cut -f 1,3 file - дава 1 и 3 колона
+cut -f 3,1 file - дава 1 и 3 колона (а не наобратно)
+cut -f 1-3 file - дава от 1 до 3 колона
+cut -f 1- file - дава от 1ва колона до края
+cut -f -3 file - дава от началото до 3 колона
+
+(по def разделителят е табулация)
+
+cut -d : -f 1,3 file - (d от delimiter) - дава само 1 и 3та колона (разделени с : )
+
+cut -c 1-5 file - дава първите 5 байта от вс ред на даден файл
+cut -c 1-5,15-20,32 file - и от 1 до 5, и от 15 до 20, и 32
+
+cut -d : -f 1,7 -- output-delimiter=$'\t' file - променя по какъв начин да се разделят колонките на output-а
+				   ="   "
+---------------------------------------------------------------------------------------------
+
+tr - (translate) - работи само в/у stdin-а си; сменя символи с др символи
+
+cat file | tr a X - сменя вс а-та с Х
+cat file | tr aA Xx - сменя а->Х и А->х
+cat file | tr a-z A-Z - задавме range-ове -> от а до z сменяме с A до Z (заменят се по поредност; 13тия с 13тия)
+cat file | tr abcd e - и 4те се заменят с е (ако 2то е по-кратко, допълваме първото с последния символ)
+cat file | tr abcd ae - (все едно abcd aeee) а->а ; b,c,d->e 
+cat file | tr a AOPJL - променяме само а->А (Дрте нямат значение)
+cat file | tr -s a - (s=squeeze) -(ааааааааbcaa = аbca) всяка последователност от >1 а-та = 1 а  
+cat file | tr -d aAB - (aBbcA = bc) трие срещанията на символите 
+
+--------------------------------------------------------------------------------------------------------------------
+
+grep (gnu regular expression parser) - търси pattern в текст (string/ regular expression)
+(ако не подадем файл -> в/у stdin-а си)
+(прави разлика м/у големи/малки букви)
+
+регулярен израз а* * 0 или повече повтаряния на a
+a
+aa
+aaa
+aaaa
+...
+и празна дума
+
+симовли със спец значение и без
+със - *.?+ и тн
+
+* = 0 или повече срещания
+. = кой да е символ
+? = 0 или 1 срещания
++ = 1 или повече срещания
+
+
+grep pattern file - работи ред по ред => ако match-не на някой ред, дава целия ред
+grep -n - добавя номера на реда (n:posle pishe kvoto pishe)
+grep -n -A 1 pattern file -(After)  дава толкова на бр реда след  match-натия, колкото в -А (1)
+grep -n -B 2 pattern file -(Before) дава толкова на бр реда преди match-натия, колкото в -B (2)
+grep -n -C 1 pattern file -(ABC (: )дава толкова на бр реда преди и след
+grep -i pattern file - (insensitive) не прави разлика м/у малки и гл букви
+grep -v pattern file - (inVerted) дава вс редове, които не match-ват pattern-a
+
+-----------------------------------------------------------------------------------------------------------
+
+sed - stream editor
+sed <options> <script> <file> - script-а е на негов си turing complete език
+
+sed 's/pattern/text/match_option' - (s=substitute) замествай срещания на патърн с текст; толкова пъти на ред (match_option)
+sed 's/pattern/text/' pesen - nqma pattern vyv file pesen => nishto
+sed 's/sivota/XXXXX/' pesen - smenq "sivota" s XXXXX
+sed 's/edno/XXXXX/' pesen - сменя само 1то срещане на "edno"
+sed 's/edno/XXXXX/g' pesen - (g=global) вс срещане
+sed 's/edno/XXXXX/2' pesen - само 2рото срещане
+sed -i 's/edno/XXXXX/g' pesen - (i=inpace) - не го принти, а го променя директно
+
+----------------------------------------------------------------------------------------------------------------------------
+
+awk
+awk 'BEGIN {} {} END {}' - BEGIN/END веднъж за изпълнението; Body block-а - за вс ред
+(пак собствен език)
+(block - съвкупност от команди)
+
+cat a | awk '{print $1}'
+cat a | awk 'BEGIN {print "Neshtosi";} {} END {print "nakraq..."}' -принти begin, нищо, принти end
+cat a | awk 'BEGIN {print "Neshtosi";} {print $2} END {print "nakraq..."}' -принти begin, 2 колона от а, принти end (едно под друго)
+cat a | awk 'BEGIN {print "Neshtosi"; print "Vtoro neshto"} {print $2} END {print "nakraq..."; print "na nov red sa vs"; print "krai.."}'
+cat a | awk 'BEGIN {} {print $2; print $3} END {}' - (2 колона само с b-та, 3та с c-ta) => принти b c b c b c... (по 1 на ред) (защото чете ред по ред)
+cat a | awk 'BEGIN {} {print $2; print $3} END {}' - сменяме подредбата на колоните, които пишем (за разлика от cut) => 1 колона c-та; 2ра колона b-та
+
+
+2:20:15
+
+
