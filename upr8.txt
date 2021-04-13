@@ -1,0 +1,589 @@
+shell scripts
+
+echo -вс подадено като аргумент + нов ред, се принти на stdout 
+еcho -n -да не слага нов ред
+echo -e -разпознава спец символи
+(man echo)
+
+read -приема име на порменлива/и, които да дефинира;
+      чете текст до делимитър (нов ред по деф)
+      присвоява части от текста на променливите
+
+read var var
+<-ivan gosho pesho iki mariq
+read var var1
+<-ivan gosho pesho iki mariq
+echo $var
+->ivan
+echo $var1
+->gosho pesho iki mariq
+read car1 var2 var3
+<-edno dve tri chetiri
+echo $var1
+->edno
+echo $var2
+->dve
+echo $var3
+->tri chetiri
+
+(ако отворим нов шел, няма да ги има)
+
+
+-------------------------------------------------------
+shell mathematics 
+
+$(( ))
+
+$(( 5 + 10 * 2 )) -> заменя се със ст-та на arithmetic expansion-a (т.е 25)
+echo $(( $var + 10 * 2 ))
+echo $(( 50/11 )) ->дава 4
+
+bc - calculator
+echo "5 + 10 + 25" | bc -> дава 40
+echo "50/11 " | bc -> дава 4
+echo "50/11 " | bc -l -> дава float число 
+
+expr (man expr)
+
+
+test - проверява
+подобно на source има 2ро име
+(man test)
+
+test 5 -eq 5
+[ 5 -eq 5]
+
+проверява 3 неща:
+1- сравнява числа
+2- сравнява стрингове
+3- проверява дадени файлове имат ли дадени пропъртита
+
+test 5 -eq 5 
+(екзит статус 0)
+test 6 -eq 5 
+(екзит статус 1)
+
+test string = string
+(екзит статус 0)
+test string = string12335
+(екзит статус 1)
+
+test 5 -lt 10
+(екзит статус 0)
+test 5 -lt 3
+(екзит статус 1)
+
+(съществува ли файла)
+test -е case.sh
+test -e kpacu.tt
+
+test -f case.sh (файл ли е)
+test -d case.sh (дир ли е)
+test -x case.sh (екзекютъбъл ли е)
+test -w case.sh (writeable ли е)
+
+
+-------------------------------------------------
+exit status-и
+
+вс п-с се асоциира с ^ = ст-ст, която п-са връща, когато се терминира
+2 вида: успех = 0
+	неуспех != 0  [1-255]
+
+grep - използва exit статуси (има секция exit status)
+
+echo $? -екзит статуса на последната команда
+
+man true (винаги успех)
+man false (винаги неуспех)
+
+false
+echo $?
+-> 1
+
+true
+echo $?
+-> 0
+
+
+exit 1 -приключва и връща екзит статус 1 (ако не е в рамките => лошо)
+-------------------------------------------------
+конструкции
+
+&& = AND
+ако левия върне 0 => изпълнява десния
+
+true && echo pesho  => вади pesho
+false && echo pesho => нищо
+true && echo pesho && false && true && echo neshtosi - изпълнява само до false
+
+|| = OR
+ако левия върне 0 => десния не се изпълнява
+
+false || echo "ivan" => вади ivan
+true || echo "ivan => нищо
+false || false || false || echo gosho
+false || echo pesho || echo gosho =>вади pesho
+
+test 5 -eq 5 && echo pesho || echo gosho = 5 == 5 (да)->pesho (не)->gosho
+
+( true || false ) && ( true || false ) && echo pesho
+стартира се нов шел, в който се изпълняват командите в скобите
+той връща екзит статус, който се замества на мястото
+
+
+
+test -x case.sh && test -w case.sh && test -r case.sh && echo pesho => вади пешо
+								       (ако някое е невярно => не се вади нищо)
+[ -x case.sh ] && ... - по-четимо от ^
+
+neshto && edno || dve -> if neshto then edno else dve
+----------------------------------------------------------------------------
+shell: if
+
+if <cmd>; then
+	<body>
+fi
+
+-----------
+#!/bin/bash
+if [ 5 -eq $1]; then
+	echo "tralala"
+fi
+
+if grep -q "^$2" /etc/passwd; then
+	echo "$2 exists"
+fi
+
+exit 0
+-------
+./if.sh 5 
+->(nishto)
+./if.sh 5 kpacu
+->tralala
+->kpacu exists
+
+-----------
+#!/bin/bash
+if [ 5 -eq $1]; then
+	echo "tralala"
+fi
+
+if grep -q "^$2" /etc/passwd; then
+	echo "$2 exists"
+elif [4 -eq $3]; then
+	echo "test"
+else
+	echo "no such user"
+fi
+
+exit 0
+-------
+./if.sh 5 0 0 
+->tralala
+->non such user
+
+-------------------------------------------------------------------------
+vi ex.sh
+
+----
+#!/bin/bash
+
+read -p "Enter number : " n (чете през стдин-а си)
+
+if [ $n - ge 0]; then
+	echo "$n is positive"
+else 
+	echo "$n is negative"
+fi
+exit 0
+------------
+
+--------------------------------------------------------------------
+shell:case
+
+ако ст-та на $1 матчва патърн Х =>изпълнява боди Х; ако матчва няколко => изп. само най-горния
+;; - индикатор за край
+esac - индикатор за край
+
+case "$1" in 
+	<pattern1>)
+		<body1>
+	;;
+	<pattern2>)
+		<body2>
+	;;
+
+	...
+	<patternN>)
+		<bodyN>
+	;;
+esac
+
+Пример:
+-----------
+#!/bin/bash
+case "$1" in 
+	test)
+		echo "yeeeyy"
+		if [ $2 = pesho ]; then (ако нямаме 2 аргумент => синтактична грешка; )
+		(затова го правим "$2")
+			echo "Vsichki obichat PEsho"
+		else 
+			echo "Nikoi ne obicha pesho"
+		fi
+		echo "Past the if"
+	;;
+	abriviatura)
+		echo "This will never match :/"
+	;;
+	ab*)
+		echo "Ah, it's the regex match!"
+	;;
+
+	*) (това е default-ен матч)
+		echo "This is beautiful match"
+	;;
+esac
+----------
+./cases.sh test
+./case.sh abc
+./case.sh abriviatura
+./case.sh neshtosi
+
+
+-----------------------------------------------------------------
+word splitting
+
+разделя реда на смислови части (думи)
+(различно от непразна последователност от нонуайтспейс керъктърс)
+(те са тоукъни; може да има спейс или нов ред)
+
+$IFS (input field separator) - в нея седят символите, които интерпретираме като разд мюу думи
+(по деф интервал табулация нов ред)
+(ако ще я променяме *нежелатено е* да я запазим в някаква променлива)
+
+
+read [-d delim] [name ...]
+
+------------------------------------------------------------------------------
+seq (sequence)
+
+seq 1 10 - ot 1 do 10
+seq 1 3 10 - ot 1 do 10 sys stypka 3 (1 4 7 10)
+seq 1 7 10 - ot 1 do 10 sys stypka 7 (1 8)
+seq -w 1 81 300 - допълва (001 081 и тн)
+
+-----------------------------------------------------------------
+for loop
+(като for each)
+
+for <variable> in <list>; do
+	<body>
+done
+
+
+<variable> - итератор, итериращ по ел в <list>
+<body> - поредица от команди, изпълнявани, колкото ел в list-а
+
+
+for i in 1 2 3; do echo "i is $1"; done
+->i is 1
+->i is 2
+->i is 3
+
+for i in $(seq 1 3); do echo "i is $1"; done
+->i is 1
+->i is 2
+->i is 3
+
+
+
+-------
+#!/bin/bash
+
+echo "\$@"
+for i in $@; do echo "[$i]" ; done
+
+echo 
+echo '"$@"'
+for i in "$@"; do echo "[$i]"; done
+
+echo 
+echo '$&'
+for i in $*; do echo "[$i]"; done
+
+echo
+echo '"$*"'
+for i in "$*; do echo "[$i]"; done
+--------
+
+
+$@ = tova e pyrvi argument vtori tozi e treti (8 != smislovi chasti)
+$* = същото
+
+"$@" = списък от стрингове ("tova e pyrvi argument" "vtori" "tozi e treti")
+"$*" = просто стринговете ("tova e pyrvi argument vtori tozi e treti"))
+
+при "$@" вижда 3 тоукъна
+при "$*" вижда 1 тоукън
+
+
+
+break [n] - прекъсва изпълнението на цикъла
+continue [n] - прекъсва текущата итерация => иди на следващата
+
+-------
+#!/bin/bash
+
+for i in 1 2 3; do
+	for k in pesho gosho niki; do
+		echo "$k ima $i qbylki"
+		if [ gosho = "$k" ]; then
+			echo "breaking!"
+			break
+		fi
+	done
+done
+
+exit 0
+-------
+
+./script.sh
+pesho ima 1 qbylki
+gosho ima 1 qbylki
+breaking!
+pesho ima 2 qbylki
+gosho ima 2 qbylki
+breaking!
+pesho ima 3 qbylki
+gosho ima 3 qbylki
+breaking!
+
+-------
+#!/bin/bash
+
+for i in 1 2 3; do
+	for k in pesho gosho niki; do
+		echo "$k ima $i qbylki"
+		if [ gosho = "$k" ]; then
+			echo "breaking!"
+			break 2 (брейкваме и двата цикъла)
+		fi
+	done
+done
+
+exit 0
+-------
+./script.sh
+pesho ima 1 qbylki
+gosho ima 1 qbylki
+breaking!
+
+
+for i in 1 2 3; do
+	for k in pesho gosho niki; do
+		echo "$k ima $i qbylki"
+		if [ gosho = "$k" ]; then
+			echo "continue"
+			continue
+		fi
+		echo "$k iska da ima $i krushi"
+	done
+done
+
+exit 0
+-------
+./script.sh
+...
+
+-------
+./script.sh
+pesho ima 1 qbylki
+gosho ima 1 qbylki
+breaking!
+
+
+for i in 1 2 3; do
+	for k in pesho gosho niki; do
+		echo "$k ima $i qbylki"
+		if [ gosho = "$k" ]; then
+			echo "continue"
+			continue 2 (прескача и 2та цикъла)
+		fi
+		echo "$k iska da ima $i krushi"
+	done
+done
+
+exit 0
+-------
+./script.sh
+...
+
+----------------------------------------------------------------
+while loop
+
+while <cmd>; do (ако cmd върне екзит статус 0 => изпълнява тялото)
+	<body>
+done
+
+
+-----
+#!/bin/bash
+
+cnt = 0
+head -n 10 /etc/passwd | while read line; do (докато има какво да чете...)
+	cnt=$(( $cnt + 1 ))
+	echo "Iteration: $cnt"
+done
+-----
+от 1 до 10
+
+
+
+
+-----
+#!/bin/bash
+
+cnt = 0
+head -n 10 /etc/passwd | while read line; do (докато има какво да чете...)
+	cnt=$( echo "$line" | wc -c)
+	row=$(( $row + 1 ))
+	echo "Row $row has $cnt characters"
+done
+-----
+row 1 has ... characters
+row 2 has ... characters
+...
+
+
+
+
+-----
+#!/bin/bash
+
+n=1
+
+while [$n -lt 5 ]; do
+	echo "n is $n
+	n=$(( ДОПИШИ!!!!
+-----
+
+------------------------------------------------------------------------------------
+subshells
+(конструкция с формат (..) )
+
+
+( echo pesho; echo gosho; cat /etc/passwd | wc -l )
+принти на стдаут вс; връща екзит статус на посл променлива
+
+( echo pesho; echo gosho; cat /etc/passwd | wc -l ) 1>/dev/null
+нищо не вади
+
+
+( var = pesho; echo $var )  <---това е дете и не променя оригинала на бащата 
+вади pesho
+
+echo $var
+не вади нищо
+
+------------------------------------------------------------------------------------
+
+process substitution
+
+(конструкция 
+
+2 варианта:
+<( cmds ) = изпълнява командите
+>( cmds )
+
+първа:
+cat astero-banner.txt (има долни черти)
+grep _ astero-banner.txt -дава вс редове които матчват
+grep -H _ astero-banner.txt -дава инф от кой файл е прочетен текста
+grep -H _ <( cat astero-banner.txt )
+(първо се изп (...) после <(...) се замества с файлов дескриптор, който = файл)
+=>вади различен файл
+grep -H _ < <( cat astero-banner.txt )
+=>идва от stdin-а
+
+втора:
+echo test >( grep -H test )
+echo test > >( grep -H test )
+(>(..) се замества с файлов дескриптор )
+
+
+
+
+<( cmds ) = пишат в него (даваме file-ово име на stdout на вътрешните команди)
+>( cmds ) = четат от него (даваме file-ово име на stdin на вътрешните команди)
+генерира файлов дескриптор, в който може да четем съдърж на командите вътре
+(а не файл)
+
+и 2те конструкции се заместват с файлов дескриптор; 
+в 1 вар от него прочитаме вс, което командите са написали в него
+в 2 вар командите четат текст от него
+
+grep -H = принти от къде е прочел реда, който мачва регекса
+grep -H _ astero-banner.txt => казва astero-banner.txt
+cat astero-banner.txt | grep -H _ => казва standard input
+grep -H _ <( cat astero-banner.txt ) => казва /dev/fd/63 <-ime na file-oviq descriptor
+grep -H < <( cat astero-banner.txt ) => казва standard input
+(насочваме стдин-а към файловия дескриптор)
+
+
+
+echo -n "test" > >( wc -c )
+>( wc -c ) чете от stdout-а на echo => вади 4
+
+
+<Следващия път ще се върнем тук (((:
+
+--------------------------------------------------------------------------------------
+echo "a b c" | read a
+echo $a  => няма ст-ст (изпълнява се в контекста на детето)
+а сетва ст-та ".." на а, обаче в п-с, който е дете на текущия баш; => дете не променя родителите на баща си
+
+read a < <( echo "a b c" )
+echo $a => a b c
+(прави дете, но изпълнява се в контекста на баша
+
+
+echo 42 | ( read foo; echo "1: [$foo]" )
+->1: [42]
+
+echo "2: $foo"
+->2:
+
+------------------------------------------------------------------------------
+shell:functions
+
+можем да си дефинираме функции
+
+kpacu () {
+echo "tova e funkciq
+}
+
+
+:() { :|:& };:
+:-име на ф-я
+|-пайпва се
+
+func () {
+ func | func &
+};
+
+T1: 2x func
+T2: 4x func
+T3: 8x func
+TN: 2^N func
+
+
+unset function_name -спира да е ф-я
+declare -f -дава вс ф-ии, които са декларирани (и дефинициите им) 
+--------------------------------------------------------------------------------
+
+
+
+
+
