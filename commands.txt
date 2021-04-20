@@ -87,42 +87,32 @@ unxz file.xz	-- uncompress file
 -4---------------------------------------------------------
 find /etc -type -f								-- all files from /etc
 find /etc -type -f -exec stat -c "%n %s" {} \;	-- name & size 4 every object of find
-# -exec cmd \;	--syntax for exec (escaping ;)
 
-
-<				~/redirect stdin/~
 cmd < file 				
 cat < file				-- cat reads from file
 cat file - file			-- read file; stdin; file
 cat file - file < file1	-- read file; file1; file
 cat file1 < file2		-- prints only file1 (stdin=file2 is not used)
 
->				~/redirect stdout/~
 file descriptor > file/&file descriptor	
 cat file				-- prints file
 cat file > file1		-- print file in file1
 cat file 1> file1		-- ^
 cat file file > file1	-- print 2xfile in file1 (if no file1 => create)(trunc)
 
-2> 				~/redirect stderr/~
 cat file 2> file1		-- error messages are saved in file1
 
-.					~/combined/~
 cat yes no 2> stderr 1> stdout		-- yes->stdout; no(errors)->stderr
 cat no 2> stderr 1> stdout < yes	-- yes->stdout, no(errors)->stderr
 
->>				~/+appending/~
 file_descriptor >> file/&file_descriptor
 cat yes >> stdappend		-- same as > but appending
 
-2>>
 cat no 2>> stderrappend		-- same as 2> but appending
 
-&file_descriptor
 cat yes no 1> out 2>&1	-- redirect stderr -> out (stdout->out)
 cat yes no 2>&1 1> out	-- redirect stderr -> terminal (stdout->terminal at this point)
 
-&>
 cat yes no &> both 			-- redirect stdout & stderr
 cat yes no 2> both 1>&2		-- ^
 cat yes no 1> try  2> try	-- redirect only stderr
