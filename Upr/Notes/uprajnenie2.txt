@@ -137,13 +137,13 @@ T = special (za others)
 rwS--xr--T
 
 2635
-rw--ws-r-x
+rw--wsr-x
 
 6635
-rwS-ws-r-x
+rwS-wsr-x
 
 7635
-rwS-ws-r-t
+rwS-wsr-t
 ----------------------------------------------------------------------------------------------------------------
 chmod - променя Permission-ите на файлове/дир
 > chmod 0664 foo.txt
