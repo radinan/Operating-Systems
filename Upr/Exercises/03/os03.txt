@@ -359,21 +359,34 @@ cat population.csv | awk -F ',' '{if($3 == "1969") print $0}' | sort -t ',' -k 4
 
 45. В home директорията си изпълнете командата `curl -o songs.tar.gz "http://fangorn.uni-sofia.bg/misc/songs.tar.gz"`
 (b9100)
+:P
 
 46. Да се разархивира архивът songs.tar.gz в папка songs във вашата home директорията.
 (b9101)
+mkdir ~/songs
+cd songs
+tar -xf songs.tar.gz
+rm songs.tar.gz
+
 
 47. Да се изведат само имената на песните.
 (b9102)
+find . | tail -n +2 | awk -F '[-(]' '{print $2}' | sed 's/^.\(.*\).$/\1/g'
+
 
 48. Имената на песните да се направят с малки букви, да се заменят спейсовете с долни черти и да се сортират.
 (b9103)
+find . | tail -n +2 | awk -F '[-(]' '{print $2}' | sed 's/^.\(.*\).$/\1/g' | tr A-Z' ' a-z_ | sort
+
 
 49. Да се изведат всички албуми, сортирани по година.
 (b9104)
+find . | tail -n +2 | awk -F [\(\)] '{print $2}' | sort -t ' ' -k 2 -n | awk -F , '{print $1}'
 
 50. Да се преброят/изведат само песните на Beatles и Pink.
 (b9105)
+find . | tail -n +2 |awk -F './| - | \(' '{if($2 == "Pink" || $2 == "Beatles") {print $3; i++;}} END{print i}'
+
 
 51. Да се направят директории с имената на уникалните групи. За улеснение, имената от две думи да се напишат слято:
 Beatles, PinkFloyd, Madness
