@@ -325,20 +325,37 @@ xargs -I {} grep :{}: /etc/group | awk -F ':' '{print $1}'
 
 40. Копирайте файл /srv/os/population.csv във вашата home директория.
 (b9050)
+:P
 
 41.   Използвайки файл population.csv, намерете колко е общото население на света
 през 2008 година. А през 2016?
 (b9051)
 
+cat population.csv | awk -F ',' '{if($3 == "2008") i+=$3} END{print i}'
+(cat population.csv | awk -F ',' '{if($3 == "2008") print $0}' | awk -F ',' '{i+=$3} END{print i}')
+
+cat population.csv | awk -F ',' '{if($3 == "2016") i+=$3} END{print i}'
+
+
 42. Използвайки файл population.csv, намерете през коя година в България има най-много население.
 (b9052)
+
+cat population.csv | awk -F ',' '{if($1 == "Bulgaria") print $0}' | sort -t ',' -k 4 -rn | head -n 1 | awk -F ',' '{print $3}'
 
 43. Използвайки файл population.csv, намерете коя държава има най-много население през 2016. А коя е с най-малко население?
 (Hint: Погледнете имената на държавите)
 (b9053)
 
+cat population.csv | awk -F ',' '{if($3 == "2016") print $0}' | sort -t ',' -k 4 -rn | head -n 1
+
+cat population.csv | awk -F ',' '{if($3 == "2016") print $0}' | sort -t ',' -k 4 -rn | tail -n 1
+
+
 44. Използвайки файл population.csv, намерете коя държава е на 42-ро място по население през 1969. Колко е населението й през тази година?
 (b9054)
+
+cat population.csv | awk -F ',' '{if($3 == "1969") print $0}' | sort -t ',' -k 4 -rn | head -n 42 | tail -n 1 | awk -F ',' '{print $4}'
+
 
 45. В home директорията си изпълнете командата `curl -o songs.tar.gz "http://fangorn.uni-sofia.bg/misc/songs.tar.gz"`
 (b9100)
