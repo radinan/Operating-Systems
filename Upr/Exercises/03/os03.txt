@@ -327,6 +327,7 @@ xargs -I {} grep :{}: /etc/group | awk -F ':' '{print $1}'
 (b9050)
 :P
 
+
 41.   Използвайки файл population.csv, намерете колко е общото население на света
 през 2008 година. А през 2016?
 (b9051)
@@ -341,6 +342,7 @@ cat population.csv | awk -F ',' '{if($3 == "2016") i+=$3} END{print i}'
 (b9052)
 
 cat population.csv | awk -F ',' '{if($1 == "Bulgaria") print $0}' | sort -t ',' -k 4 -rn | head -n 1 | awk -F ',' '{print $3}'
+
 
 43. Използвайки файл population.csv, намерете коя държава има най-много население през 2016. А коя е с най-малко население?
 (Hint: Погледнете имената на държавите)
@@ -360,6 +362,7 @@ cat population.csv | awk -F ',' '{if($3 == "1969") print $0}' | sort -t ',' -k 4
 45. В home директорията си изпълнете командата `curl -o songs.tar.gz "http://fangorn.uni-sofia.bg/misc/songs.tar.gz"`
 (b9100)
 :P
+
 
 46. Да се разархивира архивът songs.tar.gz в папка songs във вашата home директорията.
 (b9101)
@@ -383,6 +386,7 @@ find . | tail -n +2 | awk -F '[-(]' '{print $2}' | sed 's/^.\(.*\).$/\1/g' | tr 
 (b9104)
 find . | tail -n +2 | awk -F [\(\)] '{print $2}' | sort -t ' ' -k 2 -n | awk -F , '{print $1}'
 
+
 50. Да се преброят/изведат само песните на Beatles и Pink.
 (b9105)
 find . | tail -n +2 |awk -F './| - | \(' '{if($2 == "Pink" || $2 == "Beatles") {print $3; i++;}} END{print i}'
@@ -391,6 +395,10 @@ find . | tail -n +2 |awk -F './| - | \(' '{if($2 == "Pink" || $2 == "Beatles") {
 51. Да се направят директории с имената на уникалните групи. За улеснение, имената от две думи да се напишат слято:
 Beatles, PinkFloyd, Madness
 (b9106)
+
+find . | tail -n +2 | awk -F './| -' '{print $2}' | sed 's/ //g' | sort | uniq | xargs -I {} mkdir {}
+(mkdir Beatles PinkFloyd Madness) :DDD
+
 
 52. Напишете серия от команди, които извеждат детайли за файловете и директориите в
 текущата директория, които имат същите права за достъп както най-големият файл
