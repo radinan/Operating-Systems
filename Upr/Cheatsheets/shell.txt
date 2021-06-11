@@ -2,15 +2,15 @@
 <-+ Shell +->
   |-------|
 
-echo $SHELL			- дава текущия шел
+echo $SHELL		- дава текущия шел
 source source_me	- изпълнява файла(съдърж) като валидни команди
      . source_me	- ...
-echo $PS1			- спец променлива, която дефинира prompt(това вляво)
+echo $PS1		- спец променлива, която дефинира prompt(това вляво)
 export PS1="pr:"	- дефиниране
-PS1=pr				- ...	 
+PS1=pr			- ...	 
 
 alias ll='ls -la'	-винаги в нач на реда
-history				-история за вс
+history			-история за вс
 
 
 °Променливи°
@@ -19,9 +19,9 @@ $var		- при използване
 echo $var	- вади 50
 
 var=string	 
-echo $var		- вади string 
+echo $var	- вади string 
 var=string2	- нова ст-т
-echo $var1		- вади string2
+echo $var1	- вади string2
 
 var="two words"	- спейсове, оградени с ""
 
@@ -57,11 +57,11 @@ cat "$var"	-> cat "aa bb"	- съдърж на  aa bb
 
 vi script.sh 		- създаване на скрипт
 chmod 744 script.sh	- даваме execute perms
-./script.sh			- даваме път до него
+./script.sh		- даваме път до него
 
 ____________
-#!/bin/bash	| <-задължителен 1ви ред!
->code<		|
+#!/bin/bash | <-задължителен 1ви ред!
+>code<	    |
 ____________|
 
 $1	- първи  cmd line аргумент
