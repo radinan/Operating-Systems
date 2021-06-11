@@ -1,0 +1,83 @@
+  |-------|
+<-+ Shell +->
+  |-------|
+
+echo $SHELL			- дава текущия шел
+source source_me	- изпълнява файла(съдърж) като валидни команди
+     . source_me	- ...
+echo $PS1			- спец променлива, която дефинира prompt(това вляво)
+export PS1="pr:"	- дефиниране
+PS1=pr				- ...	 
+
+alias ll='ls -la'	-винаги в нач на реда
+history				-история за вс
+
+
+°Променливи°
+var=50
+$var		- при използване
+echo $var	- вади 50
+
+var=string	 
+echo $var		- вади string 
+var=string2	- нова ст-т
+echo $var1		- вади string2
+
+var="two words"	- спейсове, оградени с ""
+
+_______________________________
+
+°°shell променливи°°
+	(дете->не)
+°°environmental променливи°°
+	(дете->да)
+export var="Env var"
+_______________________________ 
+
+
+var="Student"
+vara="Teacher"
+
+echo "$vara"	- ->Teacher 
+echo "${var}aa"	- ->Studentaa
+echo "${vara}a"	- ->Teachera
+
+
+файлове: aa, bb, aa bb 
+var="aa bb"
+
+cat  $var 	-> cat aa bb	- съдърж на aa и bb
+cat "$var"	-> cat "aa bb"	- съдърж на  aa bb
+
+
+~||=========||~
+ ||  shell  ||
+ || scripts ||
+~||=========||~
+
+vi script.sh 		- създаване на скрипт
+chmod 744 script.sh	- даваме execute perms
+./script.sh			- даваме път до него
+
+____________
+#!/bin/bash	| <-задължителен 1ви ред!
+>code<		|
+____________|
+
+$1	- първи  cmd line аргумент
+$2	- втори
+$3	- трети
+$@	- всички cmd line аргументи
+$*	- ...
+$#	- бр. на cmd line аргументите
+
+shift	- n-тият елемент = n+1
+
+
+
+
+
+
+
+
+
