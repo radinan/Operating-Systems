@@ -1,59 +1,59 @@
 pwd		- print working directory
 ls		- list (files n dirs)
 cd		- change directory
-touch	- create file (change mtime/atime)
-mkdir	- make directory
-rmdir	- remove empty directory
+touch		- create file (change mtime/atime)
+mkdir		- make directory
+rmdir		- remove empty directory
 cp		- copy
-cp -r 	- move directory
+cp -r 		- move directory
 mv		- move/rename
 rm		- remove
-rm -r	- remove recursive
-chmod 	- change permissions
+rm -r		- remove recursive
+chmod 		- change permissions
 ln		- link (hardlink)
-ln -s	- link (symlink)
+ln -s		- link (symlink)
 df		- disk free
 du		- disk usage
-stat	- statistics for file/dir
+stat		- statistics for file/dir
 
 ~3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 cat		- (concatenate) print file's content
-head	- beginning of the file (10 lines)
-tail	- end of the file (10 lines)
-xxd 	- byte & ascii representation of files (kakto po oop i sd)
-xargs	- reads from its stdin --> next command
-find	- find objects by pattern
+head		- beginning of the file (10 lines)
+tail		- end of the file (10 lines)
+xxd 		- byte & ascii representation of files (kakto po oop i sd)
+xargs		- reads from its stdin --> next command
+find		- find objects by pattern
 tar		- archiving
 tar -cf		- (create, files) архивиране
 tar -xf		- (eXtract, files) разархивиране
 tar -cJf	- archive & compress (with xz)
 xz		- compress file
-unxz	- uncompress file
+unxz		- uncompress file
 
 ~4~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 > 		- stdout (trunc)
 >>		- stdout (append)
 &>		- stdout & stderr
-2>&1	- stdout ----> * <~~~~~ stderr
-/dev/null	- black hole
+2>&1		- stdout ----> * <~~~~~ stderr
+/dev/null		- black hole
 left_cmd | right_cmd	- stdout (left) = stdin (right)
-paste	- merge files' contents by cols 
+paste		- merge files' contents by cols 
 wc		- words count; (lines, words, bytes, symbols)
 cut		- gives col/symbol from a file (-f cols; -d delimiter)
 tr		- swaps symbols (only from stdin)
-grep	- searches for pattern in a text
-sed 's/pattern/text/match_option' - s=substitution; changes pattern with text; g=global i=inpace
-awk 'BEGIN {} {} END {}' - BEGIN/END -> once; body -> for every line
-sort	- lexicographic order
-uniq	- remove duplicate (тр са едно след друго) => 1.sort 2.uniw
+grep					- searches for pattern in a text
+sed 's/pattern/text/match_option'	- s=substitution; changes pattern with text; g=global i=inpace
+awk 'BEGIN {} {} END {}'		- BEGIN/END -> once; body -> for every line
+sort					- lexicographic order
+uniq					- remove duplicate (тр са едно след друго) => 1.sort 2.uniw
 
 ~5~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ls		- list 
 $()		- list of commands
-cmd1; cmd2	-  do cmds one by one
+cmd1; cmd2	- do cmds one by one
 
 regex:
 .		- any symbol 
@@ -61,25 +61,25 @@ regex:
 ?		- 0/1 occurunces of symb
 *		- 0/more occurunces of symb
 {n}		- preceeding symb - n times
-{min,}	- preceefing -> match at least min times
-{,max}	- preceefing -> match at most max times
-{min, max} - preceeding -> at least min & at most max times
-[ae]	- a or e 
-[a-z]	- from a to z
+{min,}		- preceefing -> match at least min times
+{,max}		- preceefing -> match at most max times
+{min, max}	- preceeding -> at least min & at most max times
+[ae]		- a or e 
+[a-z]		- from a to z
 ^		- beginning of row
 $		- end of row
 \<		- beginning of word
 \>		- end of word
-^[rb]	- beginning with r/b
-^[^rb]	- NOT beginning with r/b
+^[rb]		- beginning with r/b
+^[^rb]		- NOT beginning with r/b
 
 
 '^n.{6,10}c$'
 "(aren)(t)"
 
 vim 	- i (insertion mode)
-		  :q + Enter (exit)
-		  :w (save changes)
+	  :q + Enter (exit)
+	  :w (save changes)
 		  
 
 
