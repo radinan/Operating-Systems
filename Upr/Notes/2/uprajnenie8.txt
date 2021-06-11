@@ -1,0 +1,114 @@
+input & output
+
+echo		- output
+echo 1 2 3 45 6
+ ->1 2 3 45 6
+echo -n						          -да не слага нов ред
+echo -e "\t\tpesho\ngosho"	-разпознава спец символи
+
+read    - input (създава shell променливи)
+read var var1	- чете до делимитър (по default нов ред)
+ <- ivan gosho pesho niki
+	echo $var  => ivan
+	echo $var1 => gosho pesho niki
+	
+read var1 var2 var3
+<- edno dve tri chetiri
+	echo $var1 => edno
+	echo $var2 => dve
+	echo $var3 => tri chetiri
+	
+	
+	
+-------------------------------------------------
+shell mathematics
+
+$(( ))	- arithmetic expansion (няма floating point)
+$(( 5 + 10 * 2 ))	- заменя се със ст-та => 25
+
+var=5
+echo $(( $var + 10 * 2 ))	- пак 25
+
+bc 		- калкулатор
+echo "5 + 10 + 25" | bc		- чете от stdin и връша отг
+echo "50/11" | bc			    - връща 4
+echo "50/11" | bc -l		  - връща 4.545454545454
+
+expr		  - evaluate-ва expression-и
+
+test			- приема expr, оценява го, връща exit status, индикиращ дали е верен
+					проверява 3 неща
+					->сравнява числа
+					->сравнява стрингове
+					->проверява файлове имат ли пропъртита
+
+test 5 -eq 5			- сравнява числа
+[ 5 -eq 5 ]				- същото
+
+test string = string	- сравнява стрингове
+[ string = string ]		- същото
+
+test 5 -lt 10			  - less than
+
+test -e case.sh			- dose exist
+test -f case.sh			- is file
+test -d case.sh			- is directory
+test -r case.sh			- is readable
+test -x case.sh			- is executable
+test -w case.sh			- is writable
+
+
+-------------------------------------------------
+Exit status
+
+всяка команда(п-с) се асоциира с exit status
+(ст-ст, която се връща, след като п-са се терминира)
+(индикират как п-са е приключил изпълнението си)
+(за различните скриптове различни значения на статуса)
+
+0 		  - успех
+1-255 	- неуспех
+
+$?		- exit status на последната команда, приключила работата си
+true	- винаги връща успех
+false	- винаги връща неуспех
+
+echo $?	- (след команда true => 0; false => 1)
+
+exit 1	- връща exit status числото, което сме подали (ако е извън диапазона=> бъгове)
+		  (примерно в края на скрипта)
+		  
+-------------------------------------------------------------
+list constructs
+
+&& - and
+cmd1 && cmd2	- cmd1 = ex_s(1-255) => cmd2(?)
+			      	- cmd1 = ex_s(0) =/>
+
+true && echo pesho
+ -> pesho
+false && echo pesho
+ -/>
+true && echo pesho && true && echo ivan
+ ->pesho
+ ->ivan
+true && echo pesho && false && echo ivan
+ ->pesho
+
+
+|| - or
+cmd1 || cmd2	- cmd1 = ex_s(1-255) =/>
+				      - cmd1 = ex_s(0) => cmd2 = ex_s(?)
+
+false || false || false || echo true
+ -> true
+false || echo gosho || echo pesho
+ -> gosho 
+ 
+
+
+
+
+
+
+	
