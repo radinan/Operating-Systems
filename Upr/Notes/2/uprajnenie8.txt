@@ -2,13 +2,13 @@ input & output
 
 echo		- output
 echo 1 2 3 45 6
- ->1 2 3 45 6
-echo -n						          -да не слага нов ред
+->1 2 3 45 6
+echo -n						-да не слага нов ред
 echo -e "\t\tpesho\ngosho"	-разпознава спец символи
 
-read    - input (създава shell променливи)
+read		- input (създава shell променливи)
 read var var1	- чете до делимитър (по default нов ред)
- <- ivan gosho pesho niki
+<- ivan gosho pesho niki
 	echo $var  => ivan
 	echo $var1 => gosho pesho niki
 	
@@ -31,10 +31,10 @@ echo $(( $var + 10 * 2 ))	- пак 25
 
 bc 		- калкулатор
 echo "5 + 10 + 25" | bc		- чете от stdin и връша отг
-echo "50/11" | bc			    - връща 4
-echo "50/11" | bc -l		  - връща 4.545454545454
+echo "50/11" | bc			- връща 4
+echo "50/11" | bc -l		- връща 4.545454545454
 
-expr		  - evaluate-ва expression-и
+expr		- evaluate-ва expression-и
 
 test			- приема expr, оценява го, връща exit status, индикиращ дали е верен
 					проверява 3 неща
@@ -48,7 +48,7 @@ test 5 -eq 5			- сравнява числа
 test string = string	- сравнява стрингове
 [ string = string ]		- същото
 
-test 5 -lt 10			  - less than
+test 5 -lt 10			- less than
 
 test -e case.sh			- dose exist
 test -f case.sh			- is file
@@ -66,7 +66,7 @@ Exit status
 (индикират как п-са е приключил изпълнението си)
 (за различните скриптове различни значения на статуса)
 
-0 		  - успех
+0 		- успех
 1-255 	- неуспех
 
 $?		- exit status на последната команда, приключила работата си
@@ -629,7 +629,3 @@ echo $a
 
 (2:28:32)
 
-
-
-
-	
