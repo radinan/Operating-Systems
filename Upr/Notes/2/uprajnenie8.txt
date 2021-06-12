@@ -83,7 +83,7 @@ list constructs
 
 && - and
 cmd1 && cmd2	- cmd1 = ex_s(1-255) => cmd2(?)
-			      	- cmd1 = ex_s(0) =/>
+				- cmd1 = ex_s(0) =/>
 
 true && echo pesho
  -> pesho
@@ -96,9 +96,10 @@ true && echo pesho && false && echo ivan
  ->pesho
 
 
+
 || - or
 cmd1 || cmd2	- cmd1 = ex_s(1-255) =/>
-				      - cmd1 = ex_s(0) => cmd2 = ex_s(?)
+				- cmd1 = ex_s(0) => cmd2 = ex_s(?)
 
 false || false || false || echo true
  -> true
@@ -106,9 +107,529 @@ false || echo gosho || echo pesho
  -> gosho 
  
 
+||/&&
+test 5 -eq 5 && echo pesho || echo gosho
+ ->pesho
+test 4 -eq 5 && echo pesho || echo gosho
+ ->gosho
+
+( true || false ) && ( true || false ) && echo pesho
+ -> pesho
+(скобите стартират нов шел, в който се изпълняват командите )
+(-> връщат екит статус -> екзит статуса на шела е това, )
+(което се връща в скобите)
 
 
-(25:46)
+сложни експрешъни:
+
+text -x case.sh && test -w case.sh && test -r case.sh && echo pesho
+(никой не ползва тест като тест, а като [])
+
+test -x case.sh && ...
+[ -x case.sh ] && [ -r case.sh ] && echo pesho
+
+-----------------------------------------------------------
+shell: if
+
+if   <cmd>; then
+	 <body>
+elif <cmd>; then
+	 <body>
+else
+	 <body>
+fi 
+
+
+
+<cmd> - команда(тест или каквото и да е)
+
+Пример:
+______________________________________
+#!/bin/bash
+if [ 5 -eq $1 ]; then
+	echo "tralala"
+fi
+
+if grep -q "^$2" /etc/passwd; then
+	echo "$2 exists"
+	echo "vtori red v body-to"
+fi
+
+exit 0
+______________________________________	
+
+
+
+!!!за bash всичко e string!!!
+
+
+______________________________________
+#!bin/bash
+
+if grep -q "^$2" /etc/passwd; then
+	echo "$2 exists"
+	echo "vtori red v body-to"
+elif [ 4 -eq "$3" ]; then
+	echo "test"
+else
+	echo "no such user :/"
+fi
+
+exit 0
+______________________________________
+
+
+______________________________________
+#!/bin/bash
+
+read -p "Enter number: " n			#чете през stdin-a (не cmd line)
+
+if [ $n -ge 0 ]; then
+	echo "$n is positive"
+else
+	echo "$n is negative"
+fi
+
+exit 0
+______________________________________
+
+
+---------------------------------------------------------------------
+shell:case
+
+case $var in
+	<pattern1>)
+		<body1>
+	;;
+	
+	<pattern2>)
+		<body2>
+	;;
+	
+	...
+	
+	<patternN>)
+		<bodyN>
+	;;
+esac
+
+ако ст-та на $var match-ва някой патърн => се изпълянява body-то му
+(ако match-ва няколко => изп се най-горния)
+(изпълняваме ТОЧНО 1 pattern!)
+	
+Пример:
+______________________________________
+#!/bin/bash
+
+case "$1" in
+	test)
+		echo "yeeyyy"
+	;;
+	ab*)
+		echo "Ah, it's the regex match!"
+	;;
+	abrivietura)
+		echo "This will never match :/"
+	;;
+	*)
+		echo "This is the default match. Nothing else matched"
+	;;
+esac
+
+exit 0
+______________________________________
+
+
+______________________________________
+#!/bin/bash
+
+case "$1" in
+	test)
+		echo "yeeyyy"
+		if [ s2 = pesho ]; then
+			echo "vsichki obichat pesho"
+		else
+			echo "nikoi ne obicha pesho"
+		fi
+		echo "Past the if"
+	;;
+	ab*)
+		echo "ab"
+	;;
+	abrivietura)
+		echo "abr
+	;;
+	*)
+		echo "aaa"
+	;;
+esac
+
+exit 0
+______________________________________
+
+ако не подадем $2 => синтактична грешка
+[ s2 = pesho ]
+се expand-ва до
+[ = pesho ]
+
+за да го оправим:
+[ "s2" = pesho ]
+се expand-ва до
+[ "" = pesho ]
+
+
+-----------------------------------------------------------
+word splitting
+
+(п-с, по време на който, shell-a разделя текста, който интерпретира на смислови части)
+(смислови части -> думи)
+(думи != норм думи != непразна последователност от символи неwhitespace)
+(думи = token-и => може спейсове)
+
+IFS -input field separator
+	 (стоят символите, който са delimiter-и)
+	 (по default вс whitespace chars)
+	 (преди да го променим, запазване в променлива)
+	 (по-добре да не се променя :) )
+	 
+ 
+read -d 	- приема делимитър
+
+-------------------------------------------------------
+seq (sequence)
+
+seq 1 10	- дава числата от 1 до 10
+seq 1 100	- дава числата от 1 до 100
+seq 1 3 10	- дава числата от 1 до 10 със стъпка 3
+			  (1 4 7 10)
+seq 1 7 10	- дава 1 8
+
+seq 1 2 15		-> 	1
+					3
+					5
+					7
+					9
+					11
+					13
+					15
+seq -w 1 2 15 	- подравнява ги
+				->	01
+					03
+					05
+					07
+					09
+					11
+					13
+					15
+
+--------------------------------------------------------
+shell: for loop
+(като for each)
+
+for <variable> in <list>; do
+	<body>
+done
+
+<list> - разделител whitespace 
+<body> - толкова пъти, колкото ел в лист-ако
+	   - на всяка итерация variable е i-ти ел от списъка
+
+______________________________________	
+for i in 1 2 3; do
+	echo "i is $i";
+done
+______________________________________
+принти:
+		i is 1
+		i is 2
+		i is 3
+
+
+______________________________________
+for i in $(seq 1 3); do
+	echo "i is $i";
+done
+______________________________________
+принти: същото
+
+
+
+
+"$@"	- "$1" "$2" "$3" ... 
+"$*" 	- "$1 $2 $3 ..."
+
+"" - escape-ват спец значение на space
+'' - принти буквално символи без спец значение
+______________________________________
+#!bin/bash
+
+echo "\$@"
+for i in $@; do 
+	echo "[$i]";
+done
+
+
+echo
+echo '"$@"'
+for i in "$@"; do 
+	echo "[$i]"; 
+done
+
+
+echo
+echo '$*'
+for i in $*; do 
+	echo "[$i]"; 
+done
+
+
+echo
+echo '"$*"'
+for i in "$*"; do 
+	echo "[$i]"; 
+done
+______________________________________
+<- ./script.sh "tova e pyrvi argument" "vtori" "tozi e treti"
+
+->
+	$@			#<list> = tova e pyrvi argument vtori tozi e treti #и ги split-ва 
+	[tova]
+	[e]
+	[pyrvi]
+	[argument]
+	[vtori]
+	[tozi]
+	[e]
+	[treti]
+
+	"$@"		#<list> = списък от стрингове
+	[tova e pyrvi argument]
+	[vtori]
+	[tozi e treti]
+
+	$*			#<list> = tova e pyrvi argument vtori tozi e treti #и ги split-ва 
+	[tova]
+	[e]
+	[pyrvi]
+	[argument]
+	[vtori]
+	[tozi]
+	[e]
+	[treti]
+
+	"$*"		#<list> = просто стринговете
+	[tova e pyrvi argument vtori tozi e treti]	
+	
+	
+break [n]		- прекъсва изпълнението на цикъла
+continue [n]	- прекъсва итерацията на цикъла => следващата
+
+[n] - колко nest-нати цикъла да бъдат афектирани
+
+
+______________________________________
+#!/bin/bash
+
+for i in 1 2 3; do
+	for k in pesho gosho niki; do
+		echo "$k ima $i qbylki"
+		if [ gosho = "$k" ]; then
+			break
+		fi
+	done
+done
+
+exit 0
+______________________________________
+->	pesho ima 1 qbylki
+	gosho ima 1 qbylki
+	breaking!
+	pesho ima 2 qbylki
+	gosho ima 2 qbylki
+	breaking!
+	pesho ima 3 qbylki
+	gosho ima 3 qbylki
+	breaking!
+	
+#при break 2
+->	pesho ima 1 qbylki
+	gosho ima 1 qbylki
+	breaking!
+	
+-----------------------------------------------------------------
+shell: while loop
+
+while <cmd>; do
+	<body>
+done
+
+(плс не пиши безкрайни цикли)
+
+
+______________________________________
+#!/bin/bash
+
+cnt=0
+
+head -n 10 /etc/passwd | while read line; do
+	cnt=$(( $cnt + 1 ))
+	echo "Iteration: $cnt"
+done
+______________________________________
+->	Iteration: 1
+	Iteration: 2
+	Iteration: 3
+	Iteration: 4
+	Iteration: 5
+	Iteration: 6
+	Iteration: 7
+	Iteration: 8
+	Iteration: 9
+	Iteration: 10
+
+
+______________________________________
+#!/bin/bash
+
+row=0
+
+head -n 10 /etc/passwd | while read line; do
+	cnt=$( echo "$line" | wc -c )
+	row=$(( $row + 1 ))
+	echo "Row $row has $cnt characters."
+done
+______________________________________
+->	Row 1 has 32 characters.
+	Row 2 has 48 characters.
+	Row 3 has 37 characters.
+	Row 4 has 37 characters.
+	Row 5 has 35 characters.
+	Row 6 has 48 characters.
+	Row 7 has 48 characters.
+	Row 8 has 45 characters.
+	Row 9 has 44 characters.
+	Row 10 has 50 characters.
+
+
+
+______________________________________
+#!/bin/bash
+
+n=1
+
+while [ $n -lt 5 ]; do
+	echo "n is $n"
+	n=$(( n + 1 ));
+done
+
+exit 0
+______________________________________
+->	n is 1
+	n is 2
+	n is 3
+	n is 4
+	
+
+----------------------------------------------------------------
+subshells
+(конструкция с формат)
+		(..)
+
+( echo pesho; echo gosho; cat /etc/passwd | wc -l )
+принти на stdout вс; връща екзит статус на посл променлива
+->	pesho	
+	gosho
+	291
+	
+( echo pesho; echo gosho; cat /etc/passwd | wc -l; false ) -> exit status 1
+->	pesho
+	gosho
+	291
+	
+( echo pesho; echo gosho; cat /etc/passwd | wc -l; true ) -> exit status 0
+->	pesho
+	gosho
+	291
+	
+subshell-овете си имат собствен stdout
+
+( echo pesho; echo gosho; cat /etc/passwd | wc -l; true ) 1> /dev/null
+-/>
+
+можем да дефинираме променливи:
+( var=pesho; echo $var )
+->pesho
+echo $var
+-/>
+(детето не променя ст-тите на бащата ;) ) 
+
+----------------------------------------------------------------------------------
+process substitution
+
+(заместват се с ФД) (ФД = можем да прочетем съдърж на командите вътре)
+(при < ФД чете stdout на cmds)
+(при > cmds четат от ФД)
+<( cmds )	- даваме "файлово име" на stdout на вътрешните команди, които можем да използваме навсякъде, където бихме използвали име на файл
+>( cmds )	- създава ФД, който ще бъде четен от командите вътре
+
+
+cat astero-banner.txt
+->
+	#kartinka
+
+grep _ astero-banner.txt
+->
+	#samo redove s _ 
+
+grep -H astero-banner.txt
+->
+	astero-banner.txt:
+	astero-banner.txt:
+	astero-banner.txt:	#kartinka
+	astero-banner.txt:
+	astero-banner.txt:
+	#файла от който чете
+
+grep -H <( cat astero-banner.txt )
+->
+	/dev/fd/63:
+	/dev/fd/63:
+	/dev/fd/63:	#kartinka
+	/dev/fd/63:
+	/dev/fd/63:
+	#име на ФД
+
+grep -H _ < <( cat astero-banner.txt )
+->
+	(standard input):
+	(standard input):
+	(standard input):	#kartinka
+	(standard input):
+	(standard input):
+
+
+
+echo testing > >( grep -H test )
+->
+	(standard input):testing
+
+echo testing >( grep -H test)
+->
+	testing /dev/fd/63
+			#това е файла
+
+echo -n "test" > >( wc -c )
+-> 4
+
+--------------------------------------------------------
+echo "a b c" | read a
+echo $a
+-/> #няма ст-т, защото след пайпа - дете на п-са и не може да променя променливите на баща си
+
+
+(2:28:32)
+
+
 
 
 	
