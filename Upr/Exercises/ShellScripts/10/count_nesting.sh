@@ -41,3 +41,4 @@ done
 
 echo "The deepest nesting is $max_nesting levels" 
 
+rm $file_name
