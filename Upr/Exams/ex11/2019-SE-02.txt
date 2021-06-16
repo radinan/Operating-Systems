@@ -1,0 +1,33 @@
+
+        awk -F ':' '$6 ~ /*SI*/ {print $0}' #all SI
+
+        ctime in unix time:
+        find DIR -maxdepth 0 -printf "%C@ %p" #unix_time  dir_name
+
+        awk -F ' ' '[$1 -gt 1551168000] && [$1 -lt 1551176100] {print $2}' #dir_names
+        
+        grep -f pattern_file file #to compare 
+
+        sed 's/^.\(.*\)/\1/g' #only nums
+
+
+
+awk -F ':' '$6 ~ /SI/ {print $6}' /etc/passwd | xargs -I {} find {} -maxdepth 0 -printf "%C@ %p\n" | awk -F ' ' '{ if(($1 > 1551168000) && ($1 < 1551176100)) print $2}' 1> dirs
+grep -f dirs /etc/passwd | awk -F '[:,]' '{print $1" "$5}' | sed 's/^.\(.*\)/\1/g'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
