@@ -1,3 +1,3 @@
 #umask 0022 => 0777 - 0022 = 0755
 
-find ~ -type d | xargs -I {} chmod 755 {}
+find ~ -mindepth 1 -type d | xargs -I {} chmod 755 {}
