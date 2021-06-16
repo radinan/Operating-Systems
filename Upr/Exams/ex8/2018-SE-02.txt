@@ -1,0 +1,1 @@
+find . -printf "%n %T@ %p\n" | awk '$1 > 1 {print $0}' | sort -rnk 2 | head -n 1 | awk '{print $3}' | xargs -I {} stat --printf "%i\n" {}
