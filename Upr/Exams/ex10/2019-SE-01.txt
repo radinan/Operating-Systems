@@ -1,0 +1,14 @@
+Goal: -> print $1"\t"$4
+
+-> tail -n +2 #remove header
+-> sort -t ';' -k 3 -n 1> sorted.txt #sort by distance
+
+                        #-> cat sorted.txt | tail -n 1 | awk -F ';' '{print $2}'
+                        #get the type 
+-> awk -F ';' -v type=$(cat sorted.txt | tail -n 1 | awk -F ';' '{print $2}') '$2 ~ type {print $1"\t"$4}' sorted.txt | head -n 1 
+
+
+
+
+
+tail -n +2 planets.txt | sort -t ';' -k 3 -n 1> sorted.txt ; awk -F ';' -v type=$(cat sorted.txt | tail -n 1 | awk -F ';' '{print $2}') '$2 ~ type {print $1"\t"$4}' sorted.txt | head -n 1
