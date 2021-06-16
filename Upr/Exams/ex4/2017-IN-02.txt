@@ -1,0 +1,4 @@
+a) find . -maxdepth 2 -type f -size 0 2> /dev/null | xargs -I {} rm {}
+b) du -a . -d 2 | sort -rn -k 1 | head -n 5                   #including '.'
+   du -a . -d 2 | sort -rn -k 1 | head -n 6 | tail -n +2      #excluding '.'
+
