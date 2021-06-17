@@ -1,0 +1,23 @@
+1. find most recently modified file
+  -> find all files in ~velin
+  -> print mtime(%T@) & name %p
+  -> sort by mtime
+  -> head 1st
+2. get its inode
+  -> stat %i
+3. find all files with the same inode
+  -> find all files in ~velin
+  -> %i %d %p
+  -> awk compare
+  -> {inode name} depth????
+4. sort by depth
+5. head
+
+
+find $(echo ~velin) -type f -printf "%T@ %i\n" | sort -n -k 1 | head -n 1 | awk -F ' ' '{print $2}' #inode 
+find $(echo ~velin) -type f -printf "%i %d\n" | awk -F ' ' -v inode=$( /\ ) '{if($1 == inode) print $0}' | sort -n -k 2 | head -n 1 | awk -F '' '{print $2}'
+
+
+find $(echo ~velin) -type f -printf "%i %d\n" | 
+awk -F ' ' -v inode=$(find $(echo ~velin) -type f -printf "%T@ %i\n" | sort -n -k 1 | head -n 1 | awk -F ' ' '{print $2}') '{if($1 == inode) print $0}' |
+sort -n -k 2 | head -n 1 | awk -F '' '{print $2}'
