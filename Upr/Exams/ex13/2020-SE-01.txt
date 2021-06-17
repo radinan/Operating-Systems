@@ -1,0 +1,4 @@
+umask 0022 => 666 - 022 = 644
+-g r-- => -g rw- => 4 + 2 => 664
+
+find ~ -type f -perm 644 | xargs -I {} chmod 664 {}
