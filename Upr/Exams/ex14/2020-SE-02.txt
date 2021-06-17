@@ -1,0 +1,24 @@
+1. launch site with most 'Failures'
+    -> remove header => tail -n +2
+    -> get only failures => awk -F '|' '$3 ~ /Failure/ {print $2}'
+    -> sort by launch site name => sort -t '|' -k 2
+    -> uniq -c
+    -> sort -rn 
+    -> head -n 1
+    -> print name => awk -F ' ' '{print $2}'
+2. most recent date
+    -> remove header => tail -n +2
+    -> awk -F '|' -v name=$(...) '{if($2 == name) print $0}'
+    -> sort by date => sort -t '|' -k 1 -rn
+    -> head -n 1
+    -> outcome:payload => awk -F '|' '{print $3":"$4}'
+
+tail -n +2 spacex.txt | awk -F '|' '$3 ~ /Failure/ {print $2}' | sort -t '|' -k 2 | uniq -c | sort -rn | head -n 1 | awk -F ' ' '{print $2}' #launch site
+tail -n +2 spacex.txt | awk -F '|' -v name=$( /\ ) '{if($2 == name) print $0}' | sort -t '|' -k 1 -rn | head -n 1 | awk -F '|' {print $3":"$4} #outcome:payload
+
+
+tail -n +2 spacex.txt | 
+awk -F '|' 
+-v name=$(tail -n +2 spacex.txt | awk -F '|' '$3 ~ /Failure/ {print $2}' | sort -t '|' -k 2 | uniq -c | sort -rn | head -n 1 | awk -F ' ' '{print $2}') 
+'{if($2 == name) print $0}' | sort -t '|' -k 1 -rn | head -n 1 | awk -F '|' '{print $3":"$4}'
+
