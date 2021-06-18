@@ -1,0 +1,13 @@
+grep *option* *pattern* *file*
+
+grep -i     = ignore case (capital letters)
+
+grep duma file /dev/null    => prints also filename
+
+grep -v     = invert match (отрицание)
+grep -e     = operate all patterns
+grep -s     = silent
+
+grep -A NUM
+grep -B NUM
+grep -C NUM
