@@ -1,0 +1,92 @@
+find *dir* *options*
+
+-d            = depth
+-maxdepth n   = (0 = .)
+-mindepth n   = 
+
++n  = more than n
+-n  = less than n
+n   = EXACT
+
+-amin n     = accesed 
+-atime n    = n*24 hours
+
+-cmin n     = changed
+-ctime n    = n*24 hours
+
+-mmin n     = modified file's data 
+-mtime n    = 24*n hours
+
+-type f =(file)
+      d =(dir)
+      l =(syml)
+      
+-xtype l  = find broken symlinks
+
+-printf format
+\n \t 
+%p    = name
+%a    = atime in 
+%c    = ctime
+%t    = mtime
+%Tk
+%Ck
+%Ak
+  @ = secs
+  H = hour (00..23)
+  k = hour ( 0..23)
+  M = minute (00..59)
+  S = second (00.00 .. 61.00)
+  T = hh:mm:ss:xxxxxxxxx
+  x = mm/dd/yy
+%b    = du (512-byte blocks)
+%k    = du (1KB blocks)
+%s    = size in bytes
+%d    = depth
+%f    = name (direktno)
+%g    = group name
+%G    = GID
+%u    = user name
+%U    = UID
+%h    = leading dirs
+%H    = starting pnt
+%i    = inode num
+%l    = obj of symlink (empty=broken)
+%n    = num of hardlinks to file
+%m    = 0755
+%M    = perms (-rwxrwxrwx)
+%y    = type
+
+
+
+
+-empty      = empty (f/d)
+
+-uis n
+-user name
+-gid n      
+-group name
+
+-links n    = n hard links
+
+-name pattern  = find . -name *.o -print
+
+-nogroup
+-nouser
+
+-path pattern   = find . -path /foo/bar/myfile
+
+-perm mode      = EXACT (g=w => 0020)
+-perm -mode     = вс подадено (-perm -220; -perm -g+w,u+w)
+-perm /mode     = някое да е изпълнено (-perm /220; -perm /u=w,g=w)
+
+
+-samefile name  = same inode as name (-L incl syml)
+
+-size n[cwbkMG]
+b (512-byte blocks)
+c (bytes)
+w (2-bytes words)
+k (KiB)
+M (MiB)
+G (GiB)
