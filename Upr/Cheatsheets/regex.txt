@@ -56,3 +56,5 @@ EXTENDED: (няма <>) #awk & egrep
  
  
  
+sed -e 's/^[[:space:]]*//g' -e 's/[[:digit:]]*$//'
+(trim)
