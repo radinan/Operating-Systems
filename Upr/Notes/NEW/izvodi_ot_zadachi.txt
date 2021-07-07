@@ -20,4 +20,19 @@ ex26
 +    ...
 +    done < <(find $1 -type l)
  
-   
+ex29
+  (ostavi samo pyrvoto sreshtane vyv 2 kolona)
+  ... | sort -rn | sort -k 2 -u
+  -> 100 edno
+  ->  99 dve
+  ->  50 edno
+  
+  => -> 100 edno
+     ->  99 dve
+     
+  
+  posledna kolona
+  awk '{print $NF}'
+  
+  predposledna kolona
+  awk '{print $(NF-1)}'
