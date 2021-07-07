@@ -1,0 +1,6 @@
+ex26
+ #You cannot escape a single quote inside a pair of singe quotes in shell. 
+ #Escaping double quotes is allowed though.
+ #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ #sed 's/\'//g' NE
+ #sed "s/'//g" DA
