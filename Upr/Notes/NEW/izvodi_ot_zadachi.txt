@@ -46,6 +46,10 @@ ex30
     >  ++ increment, and return old value.
     >  ! returns logical not.
     >  there is an implicit print at the end.
+   
+   awk -F ';' '{if(!_[$1]) _[$1]=$0} END {for(i in _) print _[i]}'
+    > same as above but more descriptive
+    > get first uniq
     
    awk -F ';' '{_[$1]=$0} END {for(i in _) print _[i]}'
     > get last uniq
