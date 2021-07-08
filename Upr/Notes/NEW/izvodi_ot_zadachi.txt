@@ -55,6 +55,7 @@ ex30
     > get last uniq
     
     
+    
     declare -A name_number 
      > associative array (hashmap)
      
@@ -63,3 +64,8 @@ ex30
      
     echo ${name_number[$name]}
      > printing value
+
+
+
+    if [ "$(ls -A $dir)" ]
+     > if dir is not empty
