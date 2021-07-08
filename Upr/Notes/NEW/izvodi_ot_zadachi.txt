@@ -53,3 +53,13 @@ ex30
     
    awk -F ';' '{_[$1]=$0} END {for(i in _) print _[i]}'
     > get last uniq
+    
+    
+    declare -A name_number 
+     > associative array (hashmap)
+     
+    name_number[$name]="$number.txt"
+     > assigning value to key
+     
+    echo ${name_number[$name]}
+     > printing value
