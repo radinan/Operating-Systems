@@ -1,0 +1,436 @@
+ ======
+|Задача|
+ ======
+
+task2:
+------------------------------------------------------
+/*
+	Реализирайте команда head без опции (т.е. винаги да извежда
+	на стандартния изход само първите 10 реда от съдържанието на
+	файл подаден като първи параматър)
+*/
+
+#include <fcntl.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int main(int argc, char* argv[])
+{
+	int fd1;
+	int i = 0;
+	char c;
+
+	if (argc != 2) {
+		write(2, "err\n", 4); //fd , char*, bytes
+		exit(2);
+	}
+
+	if ((fd1 = open(argv[1], O_RDONLY)) == -1) {
+		write(2, "File failed to open in read mode\n", 33);
+		exit(1);
+	}
+
+	while (read(fd1, &c, 1)) {
+		if (c == '\n') {
+			i=i+1;
+		}
+
+		write(1, &c, 1);
+
+		if (i == 10) {
+			break;
+		}
+	}
+
+	close(fd1);
+	exit(0);
+}
+--------------------------------------
+printf <=> cout
+
+ -------
+|fprintf| 
+ -------
+int fprintf(FILE *stream, const char *format, ...)
+
+във "format"-a можем да имаме специални символи
+(%s, \n %d ...) //както в java
+%s = null terminated string
+%d = integer
+%f = floating point integer 
+\n = newline
+
+printf("File %s has:\n%d number of lines.\n%d number of words.\n%d number of chars.\n", argv[1], lines, words, chars);
+              1        2                    3                    4                         1       2      3      4  
+
+fprintf(stderr, "err\n");
+
+За работа с файлове забранено printf, fprintf
+                    може      write()
+иначе printf, fprintf
+
+---------------------------------------------------
+// Реализирайте команда wc, с един аргумент подаден като входен параметър
+#include <unistd.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <stdio.h>
+
+int main (int argc, char* argv[]){
+	int fd1;
+	char c;
+	int lines = 0; //или lines = 1
+	int words = 0;
+	int chars = 0;
+
+	//бр кмд лайн аргументи
+	if (argc != 2) {
+		fprintf(stderr, "err\n");
+		exit(1);
+	}
+
+	//отваря ли се успешно
+	if ( (fd1 = open(argv[1], O_RDONLY)) == -1 ) {
+		fprintf(stderr, "Operation open failed\n");
+		exit(1);
+	}
+
+	//четем и броим
+	while ( read(fd1, &c, 1) > 0 ) {
+		if (c=='\n') {
+			lines++;
+			words++;
+		}
+
+		if (c==' ') { //+ други проверки :)
+			words++;
+		}
+
+		chars++;
+	}
+
+	printf("File %s has:\n%d number of lines.\n%d number of words.\n%d number of chars.\n", argv[1], lines, words, chars);
+	close(fd1);
+}
+--------------------------------------------------------
+
+|err family| (вс принтят на stderr)
+ ----------
+
+*errno* - ОС се грижи да й зададе ст-т 
+(при фейлване на sys call -> ОС попълва errno с Human readable текст, описващ каква е грешката)
+	
+ ===
+|err| 	- принти съобщение "fmt" и залепя магически текст = ст-т errno променлива
+ ===
+void err(int eval, const char *fmt, ...)
+		- прекратява програмата с exit status = eval
+(прим след проверка open(...) == -1)
+
+
+ ====
+|errx|	- същото, без errno 
+ ====
+void errx(int eval, const char *fmt, ...)
+(причината за извикване, не е фейлване на sys call)
+(иначе errno = "Success")
+
+
+ ====
+|warn|	- същото като err, без exit
+ ====
+void warn(const char *fmt, ...)
+ 
+ 
+ ===== 
+|warnx|	- същото като errx, без exit
+ =====
+void warnx(const char *fmt, ...)
+
+
+----------------------------------------
+ -----
+|lseek| - мести курсора
+ -----
+
+ФД са стр-ра; важна част е "курсор"-а = кой пореден байт от файла обработваме
+open на файл => курсор на 0-ва позиция
+искаме да го мърдаме наляво/надясно =>
+
+
+off_t lseek(int fd, off_t offset, int whence);
+
+fd     - файлов дескр
+offset - позиция
+whence - посока
+			= SEEK_SET -> местим курсора на позиция offset
+			= SEEK_CUR -> местим курсора offset позиции нагоре (от 10 на 86 при offset=76)
+			= SEEK_END -> местим курсора offset позиции след края на файла
+
+
+отваряме файл и искаме да видим големината му
+=> open(...)
+=> lseek(fd, 0, SEEK_END)
+	=> отива на посл позиция 
+	=> ни връща позицията му
+
+------|
+Задача|
+------|---------------------------------------------------------------------
+/*
+	Реализирайте команда swap, разменяща съдържанието на два файла, подадени като
+	входни параметри. Приемаме, че двата файла имат еднакъв брой символи. Може да
+	модифицирате решението, да работи и когато нямат еднакъв брой символи.
+*/
+
+#include <stdio.h>
+#include <err.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int main (int argc, char* argv[])
+{
+	if (argc != 3) {
+		errx(1, "err"); //без errno
+	}
+
+	int fd1;
+	fd1 = open(argv[1], O_RDWR);
+	if (fd1 == -1) {
+		err(2, "%s", argv[1]); //с errno
+	}
+
+	int fd2;
+	fd2 = open(argv[2], O_RDWR);
+	if (fd2 == -1) {
+		close(fd1);
+		err(3, "%s", argv[2]);
+	}
+
+	int fd3;
+	fd3 = open("my_temp_file", O_CREAT | O_RDWR | O_TRUNC);
+	if (fd3 == -1) {
+		close(fd1);
+		close(fd2);
+		err(4, "%s", "my_temp_file");
+	}
+
+	char c[4096];
+	ssize_t read_size;
+
+	//не четем байт по байт; по-добре е да четем на големи chunk-ове
+	//четем ДО 4096 (може и по малко)
+	//записваме толкова, колкото сме прочели
+	while ((read_size = read(fd1, &c, sizeof(c))) > 0) {
+		if (write(fd3, &c, read_size) != read_size ) {
+			close(fd1);
+			close(fd2);
+			close(fd3);
+			err(1, "Error while writing");
+		}
+	}
+	//курсор fd1, fd3 -> до края на файловете
+	//записали сме вс от файл с fd1 във файл с fd3
+	
+	lseek(fd1, 0, SEEK_SET); //връща курсор от файл1 в началото
+
+	//аналог
+	//файл2 във файл1
+	while ((read_size = read(fd2, &c, sizeof(c))) > 0 ) {
+		if (write(fd1, &c, read_size) != read_size) {
+			close(fd1);
+			close(fd2);
+			close(fd3);
+			err(1, "Error while writing");
+		}
+	}
+
+	//връщаме ги в началото
+	lseek(fd2, 0, SEEK_SET);
+	lseek(fd3, 0, SEEK_SET);
+
+	//записваме вс от файл3 във файл2
+	while ((read_size = read(fd3, &c, sizeof(c))) > 0) {
+		if (write(fd2, &c, read_size) != read_size) {
+			close(fd1);
+			close(fd2);
+			close(fd3);
+			err(1, "Error while writing");
+		}
+	}
+
+	close(fd1);
+	close(fd2);
+	close(fd3);
+
+	exit(0);
+	
+	/*
+		Алгоритъм:
+		cp fd1 => fd3 
+		cp fd2 => fd1 
+		cp fd3 => fd2 
+	*/
+}
+---------------------------------------------------------------------------
+ #########
+# 7 ТЕМА  #
+ #########
+ 
+ -----------
+|exec family|
+ -----------
+ 
+man 3 exec 
+
+създаване на нов процес = fork
+
+всеки п-с е binary file по време на изпълнението му
+
+exec - сменя кой да е binary file-a, който п-са изпълнява
+
+int execl(const char *path, const char *arg, ...)
+
+path - път до binary file-а
+arg - cmd line args, с които да извикаме файла 
+
+------|
+Задача|
+------|----------------------------------------------
+/*
+	Да се напише програма на C, която изпълнява команда date.
+*/
+
+#include <unistd.h>
+#include <stdlib.h>
+#include <err.h>
+#include <stdio.h>
+
+int main ()
+{
+	//вика exec |път|      |arg|   |край на арг|
+	if (execl("/bin/date", "date", (char *)NULL) == -1) {
+		err(99, "err execling"); //ако фейлне = край
+	} //ако не фейлне => променя се Binary file-a и тоя се маха
+	else {
+		printf("foobar\n"); //никога не се изпълнява
+	}
+
+	exit(0);
+}
+-----------------------------------
+вс binary file = съвкупност от инструкции
+
+main binary
+	INST 1
+	INST 2
+		if
+	INST 3
+		execl()
+	INST 4 <- INST 2 = true
+		err()
+	INST 5 <- INST 2 = false
+		printf()
+
+date binary
+	INST 1
+	INST 2
+	...
+	INST N 
+	INST N+1
+		printf("<date>")
+	...
+	INST M
+		exit 
+		
+PROCESS: ./main (pid XXXXX)
+	main:
+		INST 1
+		INST 2
+		INST 3
+			execl("date")
+		+
+			date:
+				INST 1
+				...
+				INST N 
+				INST N+1
+				...
+				INST M
+					exit() 
+=> Process dies.
+		-
+			INST 4
+=> Process dies
+Процесът може да променя инструкциите, които изпълнява 
+
+Веднъж като exec-нем => няма връщане; вс приключва :D
+
+След exec можем да достъпваме част от ресурсите (fd; без променливи)
+
+
+
+За да създадем нов п-с 
+					=> fork + exec 
+Процесът, който се форква и екзеква е отворил ФД 0, 1, 2 и нашият п-с ги наследява
+
+
+
+-------|
+Задача2|
+-------|--------------------------------
+/*
+	Да се напише програма на C, която изпълнява команда ls с точно един аргумент.
+*/
+
+#include <unistd.h>
+#include <stdlib.h>
+#include <err.h>
+#include <stdio.h>
+
+int main (int argc, char* argv[])
+{
+
+	if (argc != 2) {
+		errx(1, "err");
+	}
+
+	if (execlp("/bin/ls", "ls", argv[1], 0) == -1) {
+		err(99, "err execling");
+	} //никога не се изпълнява: 
+	else {
+		printf("foobar\n");
+	}
+
+	exit(0);
+}
+---------------------------------------------------
+
+-------|
+Задача3|
+-------|-----------------------------------
+/*
+	Да се напише програма на C, която изпълнява команда sleep (за 60 секунди).
+*/
+
+#include <unistd.h>
+#include <stdlib.h>
+#include <err.h>
+#include <stdio.h>
+
+int main()
+{
+	//с 2 аргумент, сменяме името на командата
+	if (execl("/bin/sleep", "pesho", "60", 0) == -1) {
+		err(99, "err execling");
+	} else {
+		printf("foobar\n");
+	}
+
+	exit(0);
+}
+----------------------------------------------
+ps -u kpacu - дава вс п-си, които потребител kpacu е стартирал
+
+1:58:10
