@@ -519,9 +519,6 @@ pos = 2
 
 fd1 != fd2 	
 	
-	
-	
-	
 -----------
 Задача:
 Копирайте съдържанието на foo.txt в bar.txt 
@@ -570,7 +567,6 @@ int main()
 	close(fd2);
 	exit(0);
 }
-
 -----------------
 Сигнатура на main ф-я 
 
@@ -589,16 +585,96 @@ argv[3] = char * ===> liliNULL
 argc = 4
 -------------------
 
+=========================
+Работа по задачите :))) |
+=========================
+
+1. Създаваме си директория
+2. Копираме мейк файла от гитхъб: (Makefile)
+		ifndef CC
+			CC=gcc
+		endif
+		CFLAGS=-std=c99 -Werror -Wall -Wpedantic -Wextra
+		SRCS=main.c
+		OBJS=$(subst .c,.o,$(SRCS))
+		RM=rm -f
+
+		all: main
+
+		foo: main.o
+			$(CC) $(CFLAGS) -o main main.c
+
+		clean:
+			$(RM) $(OBJS) main
+3. Създаваме файл main.c
+4. Ако не знаем библитоека на команда (удобно да имаме 2 терминала)
+	man 2 cmd
+	man 3 cmd
+
+
+Задача|
+=======
+Реализирайте командата cp, работеща с 2 аргумента, подадени като входни параметри
+
+- Приема точно 2 cmd args
+- file name to be copied
+- file where to copy firt's content
+
+1. Проверка на входните данни
+	1.1
+	
+#include <stdio.h> //printf 
+#include <stdlib.h> //exit
+#include <sys/types.h> //open
+#include <sys/stat.h>  //
+#include <fcntl.h>     //
+#include <unistd.h>    //read
+
+int main (int argc, char* argv[])
+{
+	if ( argc-1 != 2) //count of cmd args
+	{
+		printf("Number of arguments must be 2.");
+		exit(1);
+	}
+
+	int fd1;
+	int fd2;
+	char c;
+	
+	if((fd1 = open(argv[1], O_RDONLY)) == -1) //влизаме ако не успеем да отворим фд1
+	{
+		printf("Arg1 is not a valid file.");
+		exit(2);
+	}
+	if((fd2 = open(argv[2], O_CREAT|O_WRONLY|O_TRUNCATE, S_IRUSR|S_IWUSR|S_IRGTP|S_IROTH)) == -1) //влизаме ако не успеем да отворим фд2
+	{
+		printf("Arg1 is not a valid file.");
+		close(fd1);
+		exit(2);
+	}
+	
+	while(read(fd1, &c, 1))
+	{
+		if(fd1 == -1)
+		write(fd2, &c, 1);
+	}
+	
+}
+
+
+Навигация в ман страници
+
+1 ред 	 			 - 1   shift + g
+157	  				 - 157 shift + g 
+последен 			 - shift + g
+намиране на стринг	 - /string
+				NEXT - n 
+				PREV - p
 
 
 
-
-
-
-
-
-
-
+3:12:22
 
 
 
