@@ -9,18 +9,18 @@ password - <pw>
 лява  = наша ФС
 дясна = remote ФС
 ---------------------------------------------
-	-
+    -
 ~~| C |~~
-	-
+    -
 	
 	
 C - компилируем език
 (source code => компилираме => изпълним файл)
-					gcc
+		    gcc
 
 _______________
 hello_world.c |
---------------|
+--------------|---------------------
 
 #include <stdio.h> //за pritntf
 
@@ -28,7 +28,7 @@ int main() {
 	pritntf("Hello world!\n");
 	return 0;
 }
-
+------------------------------------
 компилиране:
 gcc <code>
 gcc hello_world.c 
@@ -38,7 +38,7 @@ gcc hello_world.c
 (->вади Hello world!)
 
 флагове за gcc:
--o 		- сменяме името на изпълнимия файл (a.out)
+-o 	- сменяме името на изпълнимия файл (a.out)
 (gcc -o new_name hello_world.c)
 
 -Werror - warning-ите да са третирани като error-и
@@ -54,7 +54,7 @@ waning-ите са нефатални (не са предпоставка за "
 	
 В курса:
 файл, който не се компилира с флаговете
--std=c99 	- задава стандарт за поведение (версия на c)
+-std=c99	- задава стандарт за поведение (версия на c)
 -Werror
 -Wall
 -Wpedantic
@@ -207,10 +207,7 @@ char* - null terminated string-ове
 1. Статична	- ясно е колко е (по време на компилация)
 			- не зависи от изпълнението на процеса
 			
-2. Динамична - не е ясно колко ще трябва (по време на компилация)
-			 
-			 
-
+2. Динамична - не е ясно колко ще трябва (по време на компилация)			 
 
 ----------------------------------------
 man страници 
@@ -219,12 +216,12 @@ man man:
 	коя секция за какво отговаря
 (инт ни 2 и 3 секция)
 2	- инф за вс system calls
-				(OS dependent)
-				!= за windows и linux
+	(OS dependent)
+	!= за windows и linux
 				
 3	- инф за вс library calls
-				(portable)
-				== за вс ОС
+	(portable)
+	== за вс ОС
 
 имаме неразбираема ф-я 
 => system call 	-> man 2 <name>
@@ -258,11 +255,15 @@ void *malloc(size_t size)
 ПРЕДИ края => винаги деалокиране (освобождаване на паметта)
 иначе - memory leak 
 
+
+
 |~~~~|
 |free| освобождава алокираната памет
 |~~~~|
 
 void free(void *ptr)
+
+
 
 |~~~~|
 |exit| връща exit status
@@ -280,7 +281,10 @@ exit(5);
 => error "implicit declaration of function '...'"
 => ако го няма => man 3 ... => виждаме header-a :)
 
-SC:
+
+
+
+~SC:
 
 |~~~~|
 |open| позволява да работим с файлове
@@ -310,6 +314,9 @@ O_CREAT    - ако не съществува, се създава файлът
 алокирали сме памет за ФД
 => да я деалокираме
 	
+	
+	
+	
 |~~~~~|
 |close| деалокиране на ФД
 |~~~~~|
@@ -319,6 +326,8 @@ O_CREAT    - ако не съществува, се създава файлът
 int close(int fd);
 успех   -> 0
 неуспех -> -1
+
+
 
 
 |~~~~|
@@ -334,6 +343,8 @@ ssize_t read(int fd, void *buf, size_t count);
 
 успех   -> връща колко е успял да прочете
 неуспех -> -1
+
+
 
 |~~~~~|
 |write| пишем във файл
@@ -364,7 +375,7 @@ ssize_t write(int fd, const void *buf, size_t count);
 записваме 7 (7 - 14)
 
 
-----------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -419,12 +430,9 @@ int main() {
 	//*address  = value of variable at address
 	
 	
-	
-	
 	return 0;
 }
-
-...
+------------------------------------------------------------------------------------------------------------
 xxd test_file
 -> показва 4d03 0100
 4d03 0100
@@ -437,8 +445,11 @@ xxd test_file
 ==================
 4d 03 01 00
 
+
+ ==========
 =Бърз начин= (binary representation)
-============
+ ==========
+ 
 4
 0100
 d
@@ -452,8 +463,11 @@ d
 
 4d030100 = 01001101 00000011 00000001 00000000
 
+
+ ===========
 =Бавен начин=  16->10->2
-=============
+ =========== 
+ 
 (4d)
 
 16^0 * d = 16^0 * 13
@@ -493,10 +507,13 @@ Little endianess
 -----------
 xxd -b = дава в байнъри
 -----------
+
+
 един файл може да бъде асоцииран с повече ФД 
 
 пълно име на ФД: A:4
-				 B:4
+		 B:4
+
 
 A:
 	fd1 = open(test_file)
@@ -510,12 +527,14 @@ pos = 25
 	read(fd1,10); = 25-34
 pos = 35
 
+
 B:
 	fd2 = open(test_file)
 	fd2 = 4 //възможно е, но пак са !=
 pos = 0 //не е повлиян от първия
 	read(fd2,2); = 0-1
 pos = 2
+
 
 fd1 != fd2 	
 	
@@ -568,6 +587,8 @@ int main()
 	exit(0);
 }
 -----------------
+
+
 Сигнатура на main ф-я 
 
 int main(int argc, char* argv[])
@@ -584,6 +605,8 @@ argv[3] = char * ===> liliNULL
 
 argc = 4
 -------------------
+
+
 
 =========================
 Работа по задачите :))) |
@@ -607,22 +630,26 @@ argc = 4
 		clean:
 			$(RM) $(OBJS) main
 3. Създаваме файл main.c
-4. Ако не знаем библитоека на команда (удобно да имаме 2 терминала)
+4. vim main.c 
+5. Ако не знаем библитоека на команда (удобно да имаме 2 терминала)
 	man 2 cmd
 	man 3 cmd
+6. make 
+7. ./main ...
 
 
-Задача|
-=======
+ ======
+|Задача|
+ ======
 Реализирайте командата cp, работеща с 2 аргумента, подадени като входни параметри
 
 - Приема точно 2 cmd args
 - file name to be copied
 - file where to copy firt's content
 
-1. Проверка на входните данни
-	1.1
-	
+_______ 
+main.c|
+-------	-------------------------------------------------------------------
 #include <stdio.h> //printf 
 #include <stdlib.h> //exit
 #include <sys/types.h> //open
@@ -632,6 +659,7 @@ argc = 4
 
 int main (int argc, char* argv[])
 {
+	// Verify cmd line arguments' count
 	if ( argc-1 != 2) //count of cmd args
 	{
 		printf("Number of arguments must be 2.");
@@ -642,6 +670,7 @@ int main (int argc, char* argv[])
 	int fd2;
 	char c;
 	
+	//Try and open the files we want to use
 	if((fd1 = open(argv[1], O_RDONLY)) == -1) //влизаме ако не успеем да отворим фд1
 	{
 		printf("Arg1 is not a valid file.");
@@ -649,63 +678,59 @@ int main (int argc, char* argv[])
 	}
 	if((fd2 = open(argv[2], O_CREAT|O_WRONLY|O_TRUNCATE, S_IRUSR|S_IWUSR|S_IRGTP|S_IROTH)) == -1) //влизаме ако не успеем да отворим фд2
 	{
-		printf("Arg1 is not a valid file.");
+		printf("Arg2 is not a valid file.");
 		close(fd1);
-		exit(2);
+		exit(3);
 	}
 	
-	while(read(fd1, &c, 1))
+	// Used to store info whether read/write are successfull
+	int read_status;
+	int write_status;
+	
+	// Read fd1 char by char and write them in fd2.
+	// If any read/write calls fail, set the coresponding status variable
+	//and break the loop
+	while( ((read_status = read(fd1, &c, 1)) != 0 ) && (read_status != -1 ) )
 	{
-		if(fd1 == -1)
-		write(fd2, &c, 1);
+		write_status = write(fd2, &c, 1);
+		if(write_status == -1)
+		{
+			break;
+		}
 	}
 	
+	// All read/write operations are over by now.
+	// We've either read/wrote everything we wanted,
+	// or there was a failure
+	close(fd1);
+	close(fd2);
+	
+	// read issue
+	if( read_status == -1)
+	{ 	
+		printf("Read failed!");
+		exit(4);
+	}
+	
+	// write issue
+	if( write_status == -1) 
+	{
+		printf("Write failed!");
+		exit(5);
+	}
+
+	//success
+	exit(0);
 }
+---------------------------------------------------------------------
 
 
 Навигация в ман страници
 
-1 ред 	 			 - 1   shift + g
-157	  				 - 157 shift + g 
-последен 			 - shift + g
-намиране на стринг	 - /string
-				NEXT - n 
-				PREV - p
+1 ред 	 		- 1   shift + g
+157	  		- 157 shift + g 
+последен 		- shift + g
+намиране на стринг	- /string
+		NEXT - n 
+		PREV - p
 
-
-
-3:12:22
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-	
-	
-	
-	
-	
-	
