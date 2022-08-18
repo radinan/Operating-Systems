@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# classes: Y0,M1,W2,W3
+# filename: hostname-area-YYYYMMDD.tar.xz
+# no - or .
+# some files are symlinks
+
+# hostname + area = UNIQE
+# symlink = poop
+
+# valid => min 1xY, 2xM, 3xW, 4xD (no syml) backups
+
+
+# $1 -> dir name (main dir)
+# $2 -> number [1,99] (% max fs usage)
+
+# => df, 5th col <= $2
+
+
